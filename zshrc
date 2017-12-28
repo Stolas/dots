@@ -61,14 +61,6 @@ function gvim ()
     command gvim --remote-silent "$@" || command gvim "$@";
 }
 
-function check_mail
-{
-    if [ -d ~/.mail/ ]; then
-        for i in ~/.mail/*; do
-            mailpath[$#mailpath+1]="${i}?You have new mail in ${i:t}."
-        done
-    fi
-}
 
 # Exports
 export EDITOR="vim"
