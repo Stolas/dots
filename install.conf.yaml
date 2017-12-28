@@ -1,0 +1,17 @@
+- clean: ['~']
+
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+
+- link:
+    ~/.gdbinit: gdbinit
+    ~/.gitconfig: gitconfig
+    ~/.gitignore: gitignore
+    ~/.taskrc: taskrc
+    ~/.vimrc: vimrc
+    ~/.taskrc: taskrc
+    ~/.zshrc: zshrc
+
+    ~/scripts: scripts
+
+    ~/.crawlrc: crawlrc

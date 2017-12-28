@@ -1,0 +1,26 @@
+# Files
+data.location=~/.task
+
+# Defaults
+default.priority=M
+
+
+# Coefficents
+urgency.user.tag.inbox.coefficient=15.0
+
+# Report
+report.inbox.columns           = id,description,priority,urgency
+report.inbox.description       = Inbox
+report.inbox.filter            = status:pending limit:page (+inbox)
+report.inbox.labels            = ID,Description,P,Urg
+report.inbox.sort              = urgency
+
+report.all.columns           = id,description,priority,urgency
+report.all.description       = All
+report.all.filter            = status:pending limit:page
+report.all.labels            = ID,Description,P,Urg
+report.all.sort              = urgency
+
+# Contexts
+context.work=+@work -@home
+context.home=+@home -@work
