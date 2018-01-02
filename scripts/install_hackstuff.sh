@@ -15,8 +15,6 @@
 #               diaphora
 #               Common Payloads
 #               Vagrant + Easy to install boxes, eg ARM box.
-#       Remove
-#               ~/pentest
 
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -31,7 +29,7 @@ function install_generic
     sudo zypper -n in python-pip python python-devel python3 python3-devel # Todo; libffi4
     sudo pip2 install --upgrade pip
     sudo pip3 install --upgrade pip
-    mkdir -p ~/pentest/{Fuzzing,Exploitation,Payload}
+    mkdir -p ~/Exploitation/
 }
 
 
@@ -76,7 +74,7 @@ function install_gef
 function install_metasploit
 {
     printf "${RED}Installing..[ Metasploit ]${NC}\n"
-    git clone git@github.com:rapid7/metasploit-framework ~/pentest/Exploitation/metasploit-framework
+    git clone git@github.com:rapid7/metasploit-framework ~/Exploitation/metasploit-framework
      #  autoconf \ bison \ build-essential \ curl \ git-core \
      #  libapr1 \ libaprutil1 \ libcurl4-openssl-dev \
      #  libgmp3-dev \ libpcap-dev \ libpq-dev \ libreadline6-dev \
@@ -88,7 +86,7 @@ function install_metasploit
     curl -sSL https://rvm.io/mpapis.asc | gpg --import -
     curl -L https://get.rvm.io | bash -s stable
     source ~/.rvm/scripts/rvm
-    cd ~/pentest/Exploitation/metasploit-framework/
+    cd ~/Exploitation/metasploit-framework/
     rvm --install $(cat .ruby-version)
     gem install bundler
     bundle install
@@ -99,9 +97,10 @@ function install_metasploit
 # Preeny
 function install_preeny
 {
-    $ZYPPER install_scapy
+    # $ZYPPER install_scapy
+    $ZYPPER install libini_config-devel libini_config-devel
     printf "${RED}Installing..[ preeny ]${NC}\n"
-    pushd ~/pentest/Exploitation
+    pushd ~/Exploitation
     if [ -d preeny ]; then
         cd preeny
         git pull
@@ -140,7 +139,7 @@ function install_openvas
 function install_sqlmap
 {
     printf "${RED}Installing..[ sqlmap ]${NC}\n"
-    pushd ~/pentest/Exploitation
+    pushd ~/Exploitation
     if [ -d sqlmap ]; then
         cd sqlmap
         git pull
@@ -154,7 +153,7 @@ function install_sqlmap
 function install_pwndbg
 {
     printf "${RED}Installing..[ pwndbg ]${NC}\n"
-    pushd ~/pentest/Exploitation
+    pushd ~/Exploitation
     if [ -d pwndbg ]; then
         cd pwndbg
         git pull
@@ -239,9 +238,9 @@ function install_pentest
     install_aircrack    # Note: Not really used by me
     install_hydra       # Note: Not really used by me
     install_john        # Note: Not really used by me
-    install_metasploit  # Note: Not really used by me
+    # install_metasploit  # Note: Not really used by me
     install_nmap        # Note: Not really used by me
-    install_openvas     # Note: Not really used by me
+    # install_openvas     # Note: Not really used by me
     install_sqlmap
     install_wireshark
 }

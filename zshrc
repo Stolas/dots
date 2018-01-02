@@ -47,6 +47,17 @@ function bat_status
     fi
 }
 
+# Disable globbing on the remote path.
+function scp_wrap {
+    local -a args
+    local i
+    for i in "$@"; do case $i in
+        (*:*) args+=($i) ;;
+        (*) args+=(${~i}) ;;
+    esac; done
+    command scp "${(@)args}"
+}
+
 function taskinfo
 {
     printf "ta : Task Add\ttl : Task List\n"
@@ -75,6 +86,7 @@ export PATH=$PATH:~/scripts/
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
 alias "manzshmisc=man zshmisc"
+alias scp='noglob scp_wrap'
 alias "e=gvim"
 alias "l=ls -Alhx"
 alias "ll=ls"
