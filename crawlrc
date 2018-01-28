@@ -3,7 +3,7 @@ mp_colour = 75:yellow, 45:red
 show_gold_turns = true
 show_game_turns = true
 tile_full_screen = false
-autofight_stop = 75
+autofight_stop = 45
 hp_warning = 60
 
 
