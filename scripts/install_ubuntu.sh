@@ -90,6 +90,11 @@ pip3 install --upgrade capstone unicorn keystone-engine ropper retdec-python --u
 echo -e "\e[32m\e[1m--] Installing MitM Proxy\e[0m"
 pip install --upgrade mitmproxy --user
 
+# Manticore
+echo -e "\e[32m\e[1m--] Installing Manticore\e[0m"
+pip install --upgrade manticore --user
+sudo apt install z3
+
 # Wfuzz
 echo -e "\e[32m\e[1m--] Installing wFuzz\e[0m"
 pip install --upgrade wfuzz --user
