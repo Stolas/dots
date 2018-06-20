@@ -81,7 +81,7 @@ export PROMPT="%m[$(task_status)] %~ $(repo_status) > "
 # export PS1=$PROMPT
 export RPROMPT="$(bat_status)"
 export SAVEHIST=$HISTSIZE
-export PATH=$PATH:~/scripts/
+export PATH=$PATH:~/scripts/:~/.local/bin/
 
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
