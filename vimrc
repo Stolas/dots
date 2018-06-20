@@ -63,16 +63,10 @@
         Plug 'mbbill/undotree'
 
         " Syntax checker on file save
-        Plug 'scrooloose/syntastic'
-
-        " " Exploit dev tools
-        " Plug 'stolas/vim-exploit'
+        Plug 'w0rp/ale'
 
         " Pretty colours
         Plug 'vim-scripts/darkspectrum'
-
-        " Visualize the tags
-        " NeoBundle 'taglist.vim'
 
         " Awesome search
         Plug 'kien/ctrlp.vim'
@@ -92,26 +86,11 @@
         " Fancy Startpage, to easily reach for deep files.
         Plug 'mhinz/vim-startify'
 
-        " Grep from VIM, amazing for source code analysis.
-        Plug 'mhinz/vim-grepper'
-
         " Better TagBar
         Plug 'majutsushi/tagbar'
 
-        " IDC
-        " Plug 'AtraxResearch/vim-idc-syntax'
-
-        " Add Qt Tools
-        " Plug 'townk/vim-qt'
-
-        " QML Syntax
-        " Plug 'peterhoeg/vim-qml'
-
-        "" Better clipboard
-        "Plug 'idbrill/vim-focusclip'
-
-        " Beter writing in vim.
-        Plug 'reedes/vim-pencil'
+        " LaTeX
+        Plug 'lervag/vimtex'
 
         " Auto ctags
         Plug 'xolox/vim-easytags'
@@ -119,26 +98,12 @@
         " Header switcher
         Plug 'kris2k/a.vim'
 
-        " Vim-wiki
-        Plug 'vimwiki/vimwiki'
-
-        " Templating
-        " Plug 'tibabit/vim-templates'
-        " Plug 'drmingdrmer/xptemplate'
-
-        " Docker !
-        " Plug 'ekalinin/Dockerfile.vim'
-
-
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
         Plug 'xolox/vim-misc'
 
     " Language Specific
-        " Go Support
-        " Plug 'fatih/vim-go'
-
         " Python Support
         Plug 'davidhalter/jedi-vim'
 
@@ -169,7 +134,7 @@
     set tabstop=4                     " Assume tab with of 4
     set nofoldenable                  " We hate folding
     set directory^=$HOME/.vim/tmp//   " Dont make a mess out of my filesystem
-    "set complete+=aspell              " Vim can help me being less dyslectic
+    set complete+=aspell              " Vim can help me being less dyslectic
 
     set background=dark               " Dark Background
 
@@ -194,7 +159,7 @@
     set statusline+=%=                              "left/right separator
 
     set statusline+=%#warningmsg#                   " Syntastic
-    set statusline+=%{SyntasticStatuslineFlag()}    " Syntax Error
+    " set statusline+=%{SyntasticStatuslineFlag()}    " Syntax Error
     set statusline+=%*                              " Issues
 
     set statusline+=%{fugitive#statusline()}        "Show the current git branch
@@ -205,28 +170,14 @@
 
 "====[ Startify ]================
      let g:startify_session_dir = '~/.vim/session'
-     " let g:startify_custom_header = [
-     "        \ '                                 ________  __ __        ',
-     "        \ '            __                  /\_____  \/\ \\ \       ',
-     "        \ '    __  __ /\_\    ___ ___      \/___//''/''\ \ \\ \    ',
-     "        \ '   /\ \/\ \\/\ \ /'' __` __`\        /'' /''  \ \ \\ \_ ',
-     "        \ '   \ \ \_/ |\ \ \/\ \/\ \/\ \      /'' /''__  \ \__ ,__\',
-     "        \ '    \ \___/  \ \_\ \_\ \_\ \_\    /\_/ /\_\  \/_/\_\_/  ',
-     "        \ '     \/__/    \/_/\/_/\/_/\/_/    \//  \/_/     \/_/    ',
-     "        \ ]
 
 "====[ Make the 81st column of wide lines stand out.. ]====================
-
      highlight ColorColumn ctermbg=magenta guibg=#dc322f
      call matchadd('ColorColumn', '\%81v', 100)
 
-"====[ Templating ]======
-    let g:xptemplate_minimal_prefix = 0
-    let g:tmpl_search_paths = ['~/.templates']
-
-    let g:xptemplate_minimal_prefix = 0
-    let g:xptemplate_vars = "author=Robin"
-
+"====[ Less Aggressive spell checking ]====================
+     highlight clear SpellBad
+     highlight SpellBad cterm=undercurl
 
 "====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
 
@@ -244,18 +195,16 @@
     vnoremap    v   <C-V>
     vnoremap <C-V>     v
 
-"====[ Syntastic mode ]=========
-    let g:syntastic_check_on_open = 1
-    let g:syntastic_enable_signs = 1
-    let g:syntastic_aggregate_errors = 1
-    let g:syntastic_auto_loc_list = 1
-    " For the QT!
-    let g:syntastic_cpp_include_dirs = ['/usr/include/qt5/', '/usr/include/qt5/QtWidgets', '/usr/include/qt5/QtGui', '/usr/include/qt5/QtScript', '/usr/include/qt5/QtCore']
-
-    " TODO: Quite LateX warnings
-
-"====[ Vimwiki Wiki mode ]=====
-    let g:vimwiki_list = [{'path': '~/.wiki/'}]
+" Switching to ALE soon.
+" "====[ Syntastic mode ]=========
+"     let g:syntastic_check_on_open = 1
+"     let g:syntastic_enable_signs = 1
+"     let g:syntastic_aggregate_errors = 1
+"     let g:syntastic_auto_loc_list = 1
+"     " For the QT!
+"     let g:syntastic_cpp_include_dirs = ['/usr/include/qt5/', '/usr/include/qt5/QtWidgets', '/usr/include/qt5/QtGui', '/usr/include/qt5/QtScript', '/usr/include/qt5/QtCore']
+"
+"     " TODO: Quite LateX warnings
 
 "====[ Open any file with a pre-existing swapfile in readonly mode "]=========
     augroup NoSimultaneousEdits
@@ -284,9 +233,6 @@
         let g:ctrlp_use_caching = 0
     endif
 
-    " bind K to grep word under cursor
-    nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
-
 "====[ TagList ]=====
 
     " let Tlist_Ctags_Cmd='/usr/bin/ctags'
@@ -297,12 +243,10 @@
     " " ToDo: Something like :TlistAddFilesRecursive {directory} [ {pattern} ]
     nmap <F7> :TagbarToggle<CR>
 
-"====[ VIM Exploit Development ]==
-
-    let g:exploit_author = "Robin Vossen"
-    let g:exploit_copyright = "This file is part of the Raptor exploit pack and is subject\n# to redistribution and commercial restrictions."
-
-    nnoremap <leader>ag  :Grepper -tool ag  -grepprg ag  <cr>
+" "====[ VIM Exploit Development ]==
+"
+"     let g:exploit_copyright = "This file is part of the Raptor exploit pack and is subject\n# to redistribution and commercial restrictions."
+"
 
 "====[ Spell Checking ]===
 
@@ -364,34 +308,17 @@
     autocmd Filetype asm set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype s set smartindent tabstop=8 shiftwidth=8 noexpandtab
 
-    " This is what Metasploit wants.
-    autocmd Filetype ruby set tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab shiftround smarttab
-
     " Tex friendly
-    autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab iskeyword+=: spell spelllang=nl
-    augroup pencil
-        autocmd!
-        autocmd FileType markdown,mkd call pencil#init()
-        autocmd FileType text         call pencil#init()
-        autocmd FileType tex          call pencil#init()
-    augroup END
-
+    autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab  spell spelllang=en_gb
 
 "====[ Remaps ]===
-    " Text Completion
-    imap <C-Tab> <C-N>
-
     " Really annoying Ex-mode
     nnoremap Q <nop>
 
     " sudo Write
     cmap w!! %!sudo tee > /dev/null %
 
-    " " Easy paste
-    " imap <Esc><S-Insert>"+p<CR>
-    " map <Esc><S-Insert>"+p<CR>
-    " map <leader>pp "+p
-    "
+    " Easy paste
     if has("gui_running")
         map  <silent>  <S-Insert>  "+p
         imap <silent>  <S-Insert>  <Esc>"+pa
@@ -404,42 +331,44 @@
 "===[ Custom Functions ]===
     function! IsPasteMode()
         if &paste
-            return 'PASTE MODE'
+            return '[PASTE MODE]'
         endif
         return ''
     endfunction
 
-    function! ToggleMenuBar()
-        let l:menu_option = strridx(&guioptions, "m")
-        let l:toolbar_option = strridx(&guioptions, "T")
-        if l:menu_option > 0
-            set guioptions-=m
-        else
-            set guioptions+=m
-        endif
-        if l:toolbar_option > 0
-            set guioptions-=T
-        else
-            set guioptions+=T
-        endif
-    endfunction
+    if has("gui_running")
+        function! ToggleMenuBar()
+            let l:menu_option = strridx(&guioptions, "m")
+            let l:toolbar_option = strridx(&guioptions, "T")
+            if l:menu_option > 0
+                set guioptions-=m
+            else
+                set guioptions+=m
+            endif
+            if l:toolbar_option > 0
+                set guioptions-=T
+            else
+                set guioptions+=T
+            endif
+        endfunction
 
-    command! ToggleMenu call ToggleMenuBar()
-    map <F8> :ToggleMenu<CR>
+        command! ToggleMenu call ToggleMenuBar()
+        map <F8> :ToggleMenu<CR>
 
-    let g:font = 1
-    function! ToggleFont()
-        if g:font > 0
-            let g:font = 0
-            set guifont=DejaVu\ Sans\ Mono\ 10
-        else
-            let g:font = 1
-            set guifont=DejaVu\ Sans\ Mono\ 16
-        endif
-    endfunction
+        let g:font = 1
+        function! ToggleFont()
+            if g:font > 0
+                let g:font = 0
+                set guifont=DejaVu\ Sans\ Mono\ 10
+            else
+                let g:font = 1
+                set guifont=DejaVu\ Sans\ Mono\ 16
+            endif
+        endfunction
 
-     command! ToggleFont call ToggleFont()
-     map <F4> :ToggleFont<CR>
+         command! ToggleFont call ToggleFont()
+         map <F4> :ToggleFont<CR>
+     endif
 
 "====[ Build and Run ]===
     let &makeprg = 'if [ -f Makefile ]; then make; else make -C build; fi'
@@ -450,7 +379,7 @@
     imap <F11> :make run<CR>
     imap <F12> :make debug<CR>
 
-"====[ From VIM-Sesible ]====
+"====[ From VIM-Sensible ]====
     set nrformats-=octal
 
     if &encoding ==# 'latin1' && has('gui_running')
@@ -466,4 +395,9 @@
 
     if filereadable(g:propiatryplugs)
         source /home/robin/.vimsecret
+    endif
+
+"==== [ Warn me when I use old stuff ]====
+    if v:version < 800
+            echo "Old version : " . v:version
     endif
