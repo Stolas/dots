@@ -242,7 +242,6 @@
         " ag is fast enough that CtrlP doesn't need to cache
         let g:ctrlp_use_caching = 0
     endif
-
 "====[ TagList ]=====
     " let Tlist_Ctags_Cmd='/usr/bin/ctags'
     " let Tlist_GainFocus_On_ToggleOpen = 1

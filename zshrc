@@ -11,6 +11,9 @@ autoload -U history-search-end
 compinit
 promptinit
 
+# Always update Xresouces
+[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+
 # Set Opt
 setopt autocd
 setopt automenu
@@ -36,6 +39,7 @@ function task_status
 
 function repo_status
 {
+  # Todo;
   return
   #echo "(master)"
 }
@@ -67,9 +71,9 @@ function taskinfo
     printf "tx : Task Important Task\n"
 }
 
-function gvim ()
+function vim ()
 {
-    command gvim --remote-silent "$@" || command gvim "$@";
+    command vim --remote-silent "$@" || command vim "$@";
 }
 
 
@@ -81,7 +85,7 @@ export PROMPT="%m[$(task_status)] %~ $(repo_status) > "
 # export PS1=$PROMPT
 export RPROMPT="$(bat_status)"
 export SAVEHIST=$HISTSIZE
-export PATH=$PATH:~/scripts/:~/.local/bin/
+export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
@@ -106,24 +110,3 @@ alias "tW=task waiting"
 # Aliases -- nmcli
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
-
-
-# Auto included by installers.
-# Thisis for 010
-PATH=$PATH:/home/robin/bin/010editor;export PATH;
-
-# This is all for cocos2d-x
-export COCOS_CONSOLE_ROOT="$HOME/bin/cocos2d-x-3.16/tools/cocos2d-console/bin"
-export PATH=$COCOS_CONSOLE_ROOT:$PATH
-export COCOS_X_ROOT="$HOME/bin/"
-export PATH=$COCOS_X_ROOT:$PATH
-export COCOS_TEMPLATES_ROOT="$HOME/bin/cocos2d-x-3.16/templates"
-export PATH=$COCOS_TEMPLATES_ROOT:$PATH
-export NDK_ROOT="$HOME/bin/android-ndk-r16"
-export PATH=$NDK_ROOT:$PATH
-export ANDROID_SDK_ROOT="$HOME/Android/Sdk/"
-export PATH=$ANDROID_SDK_ROOT:$PATH
-export PATH=$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools:$PATH
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
