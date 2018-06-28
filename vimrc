@@ -86,6 +86,9 @@
         " Fancy Startpage, to easily reach for deep files.
         Plug 'mhinz/vim-startify'
 
+        " EAsy tabs completions
+        Plug 'ervandew/supertab'
+
         " Better TagBar
         Plug 'majutsushi/tagbar'
 
@@ -134,7 +137,7 @@
     set tabstop=4                     " Assume tab with of 4
     set nofoldenable                  " We hate folding
     set directory^=$HOME/.vim/tmp//   " Dont make a mess out of my filesystem
-    set complete+=aspell              " Vim can help me being less dyslectic
+    set complete=.,w,b,u,t,i          " Vim can help me being less dyslectic
 
     set background=dark               " Dark Background
 
@@ -156,6 +159,13 @@
     set statusline+=%M                              "modified flag
     set statusline+=%R>\                            "read only flag
     set statusline+=%{IsPasteMode()}                "show pastemode state
+
+    if v:version < 800                               "Warn me when I use old stuff
+       set statusline+=[Outdated\ :\ 
+       set statusline+=%{v:version}
+       set statusline+=\ ]
+    endif
+
     set statusline+=%=                              "left/right separator
 
     set statusline+=%#warningmsg#                   " Syntastic
@@ -234,7 +244,6 @@
     endif
 
 "====[ TagList ]=====
-
     " let Tlist_Ctags_Cmd='/usr/bin/ctags'
     " let Tlist_GainFocus_On_ToggleOpen = 1
     " let Tlist_Close_On_Select = 1
@@ -395,9 +404,4 @@
 
     if filereadable(g:propiatryplugs)
         source /home/robin/.vimsecret
-    endif
-
-"==== [ Warn me when I use old stuff ]====
-    if v:version < 800
-            echo "Old version : " . v:version
     endif
