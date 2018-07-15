@@ -12,7 +12,7 @@
     ~/.vimrc: vimrc
     ~/.taskrc: taskrc
     ~/.zshrc: zshrc
+    ~/.crawlrc: crawlrc
 
     ~/scripts: scripts
 
-    ~/.crawlrc: crawlrc
