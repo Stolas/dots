@@ -101,6 +101,9 @@
         " Header switcher
         Plug 'kris2k/a.vim'
 
+        " CMake
+        Plug 'vhdirk/vim-cmake'
+
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -383,9 +386,7 @@
 
     nmap <F10> :make<CR>
     imap <F10> :make<CR>
-    nmap <F11> :make run<CR>
-    imap <F11> :make run<CR>
-    imap <F12> :make debug<CR>
+    imap <F12> terminal gdb -tui /bin/ls<CR>
 
 "====[ From VIM-Sensible ]====
     set nrformats-=octal
