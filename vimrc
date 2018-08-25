@@ -101,6 +101,12 @@
         " Header switcher
         Plug 'kris2k/a.vim'
 
+        " CMake
+        Plug 'vhdirk/vim-cmake'
+
+        " Clang renamer
+        Plug 'uplus/vim-clang-rename'
+
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -112,6 +118,7 @@
 
     call plug#end()
     filetype plugin indent on
+    packadd termdebug
 
 "====[ Generic Source Code Editing ]====================
 
@@ -377,6 +384,7 @@ let g:ale_fixer = {
     autocmd Filetype python set smartindent tabstop=4 shiftwidth=4 expandtab
 
     " This is for the C-Things..
+    au FileType c,cpp nmap <buffer><silent>,lr <Plug>(clang_rename-current)
     autocmd Filetype c set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype cpp set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype asm set smartindent tabstop=8 shiftwidth=8 noexpandtab
@@ -449,9 +457,9 @@ let g:ale_fixer = {
 
     nmap <F10> :make<CR>
     imap <F10> :make<CR>
-    nmap <F11> :make run<CR>
-    imap <F11> :make run<CR>
-    imap <F12> :make debug<CR>
+    " nmap <F11> :make run<CR>
+    " imap <F11> :make run<CR>
+    " imap <F12> :make debug<CR>
 
 "====[ From VIM-Sensible ]====
     set nrformats-=octal
