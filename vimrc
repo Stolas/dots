@@ -149,7 +149,7 @@
     set background=dark               " Dark Background
 
     syntax on
-    color darkspectrum              " Pretty Colours
+    color darkspectrum                " Pretty Colours
     " color inkpot
 
 "====[ WildIgnore. ]============
@@ -176,8 +176,7 @@
     set statusline+=%=                              "left/right separator
 
     set statusline+=%#warningmsg#                   " Syntastic
-    set statusline+=%{LinterStatus()}       " Syntax Error
-    " set statusline+=%{SyntasticStatuslineFlag()}    " Syntax Error
+    set statusline+=%{LinterStatus()}               " Syntax Error
     set statusline+=%*                              " Issues
 
     set statusline+=%{fugitive#statusline()}        "Show the current git branch
