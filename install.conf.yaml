@@ -2,7 +2,6 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    # Todo; git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 - link:
     ~/.Xresources: Xresources
