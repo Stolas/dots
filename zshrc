@@ -13,6 +13,7 @@ promptinit
 
 # Always update Xresouces
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+[[ "$TMUX" = "" ]] && tmux new-session -A -s default
 
 # Set Opt
 setopt autocd
@@ -42,13 +43,6 @@ function repo_status
   # Todo;
   return
   #echo "(master)"
-}
-
-function bat_status
-{
-    if [[ -d /proc/acpi/battery/BAT0/ ]]; then
-        echo "BAT: $((100*$(sed -n "s/remaining capacity: *\(.*\) m[AW]h/\1/p" /proc/acpi/battery/BAT0/state)/$(sed -n "s/last full capacity: *\(.*\) m[AW]h/\1/p" /proc/acpi/battery/BAT0/info)))%%"
-    fi
 }
 
 # Disable globbing on the remote path.
@@ -83,7 +77,6 @@ export HISTFILE=~/.histfile
 export HISTSIZE=1000
 export PROMPT="%m[$(task_status)] %~ $(repo_status) > "
 # export PS1=$PROMPT
-export RPROMPT="$(bat_status)"
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 
