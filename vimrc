@@ -126,7 +126,7 @@
     " Language Specific
         " C/ C++ Support
         " Plug 'Rip-Rip/clang_complete'
-        Plug 'Shougo/neocomplete.vim'
+        " Plug 'Shougo/neocomplete.vim'
         Plug 'Valloric/YouCompleteMe'
         " Python Support
         Plug 'davidhalter/jedi-vim'
@@ -407,6 +407,11 @@
         map <S-Down> :SmallerFont<cr>
 
     endif
+
+"====[ Compile YCM ]====
+    function! CompileYouCompleteMe()
+        !~/.vim/plugged/YouCompleteMe/install.py --clang-completer
+    endfunction
 
 "====[ Undo Tree ]===
     if has('persistent_undo')
