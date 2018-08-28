@@ -13,7 +13,7 @@ promptinit
 
 # Always update Xresouces
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
-[[ "$TMUX" = "" ]] && tmux new-session -A -s default
+[[ -z "$TMUX" ]] && tmux new-session -A -s default
 
 # Set Opt
 setopt autocd
