@@ -102,6 +102,9 @@
         " Fixme list
         Plug 'vim-scripts/TaskList.vim'
 
+        " Preprocsor
+        Plug 'mphe/grayout.vim'
+
         " CMake
         Plug 'vhdirk/vim-cmake'
 
@@ -124,6 +127,7 @@
         " C/ C++ Support
         " Plug 'Rip-Rip/clang_complete'
         Plug 'Shougo/neocomplete.vim'
+        Plug 'Valloric/YouCompleteMe'
         " Python Support
         Plug 'davidhalter/jedi-vim'
         " LaTeX Support
@@ -185,6 +189,21 @@
        set statusline+=\ ]
     endif
 
+    if !has('python3') || !has('terminal') || !has('job')
+       set statusline+=[Not\ Found\ :\ "
+       if !has('python3')
+           set statusline+=Python\ 3\ "
+       endif
+       if !has('terminal')
+           set statusline+=Terminal\ "
+       endif
+       if !has('python3')
+           set statusline+=Job\ "
+       endif
+       set statusline+=]
+
+    endif
+
     set statusline+=%=                              "left/right separator
 
 
@@ -219,6 +238,14 @@
     let g:tlTokenList = ['Todo', 'TODO', 'FixMe']
     let g:tlWindowPosition = 1
     map <F12> <Plug>TaskList
+
+"====[ Set Compiler ]====
+    let g:cmake_c_compiler = "/usr/bin/clang"
+    let g:cmake_cxx_compiler = "/usr/bin/clang++"
+
+"====[ Greyout on a timer ]====
+    " Todo; Get this to work correctly
+    " call timer_start(2000, 'GrayoutUpdate<CR>', {'repeat': -1})
 
 "====[ Execute current file with F9 ]====
     nnoremap <F9> :!%:p<cr>
@@ -295,6 +322,7 @@
         " ag is fast enough that CtrlP doesn't need to cache
         let g:ctrlp_use_caching = 0
     endif
+
 "====[ TagList ]=====
     " let Tlist_Ctags_Cmd='/usr/bin/ctags'
     " let Tlist_GainFocus_On_ToggleOpen = 1
