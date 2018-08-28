@@ -16,8 +16,8 @@
 "<F8> Show / Hide Menu
 "<F9> Run current file
 "<F10> Make
-"<F11> Make & Run
-"<F12> Make & Debug
+"<F11>
+"<F12> Todo list
 
 "====[ Init Stuff ]======
     " No things for vim-tiny or vim-small
@@ -88,12 +88,10 @@
 
         " EAsy tabs completions
         Plug 'ervandew/supertab'
+        Plug 'Shougo/deoplete.nvim'
 
         " Better TagBar
         Plug 'majutsushi/tagbar'
-
-        " LaTeX
-        Plug 'lervag/vimtex'
 
         " Auto ctags
         " Plug 'xolox/vim-easytags'
@@ -101,24 +99,40 @@
         " Header switcher
         Plug 'kris2k/a.vim'
 
+        " Fixme list
+        Plug 'vim-scripts/TaskList.vim'
+
         " CMake
         Plug 'vhdirk/vim-cmake'
 
         " Clang renamer
         Plug 'uplus/vim-clang-rename'
 
+        " Snippets
+        " Todo SirVer/ultisnips for class completion
+        " Plug 'Shougo/neosnippet.vim'
+        " Plug 'Shougo/neosnippet-snippets'
+
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
         Plug 'xolox/vim-misc'
+        Plug 'roxma/vim-hug-neovim-rpc'
+        Plug 'roxma/nvim-yarp'
 
     " Language Specific
+        " C/ C++ Support
+        " Plug 'Rip-Rip/clang_complete'
+        Plug 'Shougo/neocomplete.vim'
         " Python Support
         Plug 'davidhalter/jedi-vim'
+        " LaTeX Support
+        Plug 'lervag/vimtex'
 
     call plug#end()
+    let g:deoplete#enable_at_startup = 1 " Auto Complete
     filetype plugin indent on
-    packadd termdebug
+    packadd termdebug   " Terminal Debugger
 
 "====[ Generic Source Code Editing ]====================
 
@@ -143,7 +157,7 @@
     set shiftwidth=4                  " Assume tab with of 4
     set tabstop=4                     " Assume tab with of 4
     set nofoldenable                  " We hate folding
-    set directory^=$HOME/.vim/tmp//   " Dont make a mess out of my filesystem
+    set directory^=$HOME/.vim/tmp/    " Dont make a mess out of my filesystem
     set complete=.,w,b,u,t,i          " Vim can help me being less dyslectic
 
     set background=dark               " Dark Background
@@ -161,11 +175,8 @@
 "====[ Make the status line do something useful. ]====================
 
     set statusline=%t\                              "tail of the filename
-    set statusline+=[Line:%l/%L\ |                  "cursor line/total lines
-    set statusline+=Col:%c]\                        "cursor column
-    set statusline+=<%H                             "help file flag
-    set statusline+=%M                              "modified flag
-    set statusline+=%R>\                            "read only flag
+    set statusline+=\ %{LinterStatus()}           "Syntax Error
+    set statusline+=\ \ %{FugitiveHead(5)}\              "Show the current git branch
     set statusline+=%{IsPasteMode()}                "show pastemode state
 
     if v:version < 800                               "Warn me when I use old stuff
@@ -176,11 +187,14 @@
 
     set statusline+=%=                              "left/right separator
 
-    set statusline+=%#warningmsg#                   " Syntastic
-    set statusline+=%{LinterStatus()}               " Syntax Error
-    set statusline+=%*                              " Issues
 
-    set statusline+=%{fugitive#statusline()}        "Show the current git branch
+    set statusline+=[Line:%l/%L\ |                  "cursor line/total lines
+    set statusline+=Col:%c]\                        "cursor column
+
+    set statusline+=<%H                             "help file flag
+    set statusline+=%M                              "modified flag
+    set statusline+=%R>\                            "read only flag
+
     set statusline+=[%{strlen(&fenc)?&fenc:'none'}, "file encoding
     set statusline+=%{&ff}]                         "file format
     set statusline+=%y                              "filetype
@@ -198,9 +212,13 @@
      highlight SpellBad cterm=undercurl
 
 "====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
-
     exec "set listchars=tab:\uA6\\ ,trail:\uAF,nbsp:~"
     set list
+
+"====[ Todo list ]====
+    let g:tlTokenList = ['Todo', 'TODO', 'FixMe']
+    let g:tlWindowPosition = 1
+    map <F12> <Plug>TaskList
 
 "====[ Execute current file with F9 ]====
     nnoremap <F9> :!%:p<cr>
@@ -236,6 +254,7 @@
     let g:ale_linter = {
     \   'asm': ['gcc'],
     \   'c': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
+    \   'cpp': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
     \   'latex': ['chktex','proselint'],
     \   'python': ['flake8'],
     \   'r': ['lintr'],
@@ -246,24 +265,15 @@
     let g:ale_fixer = {
     \   'asm': ['remote_trailing_lines'],
     \   'c': ['clang-format'],
+    \   'cpp': ['clang-format'],
     \   'latex': ['remove_trailing_lines','trim_whitespace'],
     \   'python': ['autopep8', 'isort'],
     \}
-" Todo; add LaTeX
-"     let g:syntastic_check_on_open = 1
-"     let g:syntastic_enable_signs = 1
-"     let g:syntastic_aggregate_errors = 1
-"     let g:syntastic_auto_loc_list = 1
-"     " For the QT!
-"     let g:syntastic_cpp_include_dirs = ['/usr/include/qt5/', '/usr/include/qt5/QtWidgets', '/usr/include/qt5/QtGui', '/usr/include/qt5/QtScript', '/usr/include/qt5/QtCore']
-"
-"     " TODO: Quite LateX warnings
 
 "====[ Open any file with a pre-existing swapfile in readonly mode "]=========
     augroup NoSimultaneousEdits
         autocmd!
         autocmd SwapExists * let v:swapchoice = 'o'
-        "autocmd SwapExists * echomsg ErrorMsg
         autocmd SwapExists * echo 'Duplicate edit session (readonly)'
         autocmd SwapExists * echohl None
         autocmd SwapExists * sleep 1
