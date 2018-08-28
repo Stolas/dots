@@ -153,7 +153,8 @@
     " color inkpot
 
 "====[ WildIgnore. ]============
-    set wildignore =*.o,*.obj,*.pyc   " Ignore objects
+    set wildignore =.*                " Ignore dot files
+    set wildignore+=*.o,*.obj,*.pyc   " Ignore objects
     set wildignore+=.git,.hg.svn      " Ignore repos
     set wildignore+=*.png,*.jpg,*.gif " We don't need images in vim.
 
@@ -198,7 +199,7 @@
 
 "====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
 
-    exec "set listchars=tab:\uBB\uBB,trail:\uAF,nbsp:~"
+    exec "set listchars=tab:\uA6\\ ,trail:\uAF,nbsp:~"
     set list
 
 "====[ Execute current file with F9 ]====
@@ -213,41 +214,41 @@
     vnoremap <C-V>     v
 
 "====[ ALE mode ]=========
-function! LinterStatus() abort
-    let l:counts = ale#statusline#Count(bufnr(''))
+    function! LinterStatus() abort
+        let l:counts = ale#statusline#Count(bufnr(''))
 
-    let l:all_errors = l:counts.error + l:counts.style_error
-    let l:all_non_errors = l:counts.total - l:all_errors
+        let l:all_errors = l:counts.error + l:counts.style_error
+        let l:all_non_errors = l:counts.total - l:all_errors
 
-    return l:counts.total == 0 ? 'OK' : printf(
-    \   '%dW %dE',
-    \   all_non_errors,
-    \   all_errors
-    \)
-endfunction
+        return l:counts.total == 0 ? 'No Errors' : printf(
+        \   'Warnings: %d Errors: %d',
+        \   all_non_errors,
+        \   all_errors
+        \)
+    endfunction
 
-let g:ale_sign_column_always = 1
-" let g:ale_sign_error = '[!!]'
-" let g:ale_sign_warning = '[-]'
-let g:ale_fix_on_save = 1
-let g:ale_completion_enabled = 1
-let g:ale_keep_list_window_open = 1
-let g:ale_linter = {
-\   'asm': ['gcc'],
-\   'c': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
-\   'latex': ['chktex','proselint'],
-\   'python': ['flake8'],
-\   'r': ['lintr'],
-\   'text': ['proselint'],
-\   'vim': ['vint']
-\}
+    let g:ale_sign_column_always = 1
+    " let g:ale_sign_error = '[!!]'
+    " let g:ale_sign_warning = '[-]'
+    let g:ale_fix_on_save = 1
+    let g:ale_completion_enabled = 1
+    let g:ale_keep_list_window_open = 1
+    let g:ale_linter = {
+    \   'asm': ['gcc'],
+    \   'c': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
+    \   'latex': ['chktex','proselint'],
+    \   'python': ['flake8'],
+    \   'r': ['lintr'],
+    \   'text': ['proselint'],
+    \   'vim': ['vint']
+    \}
 
-let g:ale_fixer = {
-\   'asm': ['remote_trailing_lines'],
-\   'c': ['clang-format'],
-\   'latex': ['remove_trailing_lines','trim_whitespace'],
-\   'python': ['autopep8', 'isort'],
-\}
+    let g:ale_fixer = {
+    \   'asm': ['remote_trailing_lines'],
+    \   'c': ['clang-format'],
+    \   'latex': ['remove_trailing_lines','trim_whitespace'],
+    \   'python': ['autopep8', 'isort'],
+    \}
 " Todo; add LaTeX
 "     let g:syntastic_check_on_open = 1
 "     let g:syntastic_enable_signs = 1
