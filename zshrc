@@ -12,8 +12,11 @@ compinit
 promptinit
 
 # Always update Xresouces
-[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
-[[ -z "$TMUX" ]] && tmux new-session -A -s default
+if type xrdb &> /dev/null; then
+    [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+fi
+# Reminder to never do the thing below again.
+# [[ -z "$TMUX" ]] && tmux new-session -A -s default
 
 # Set Opt
 setopt autocd
@@ -35,7 +38,9 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 # Functions
 function task_status
 {
-    task +inbox +PENDING count
+    if type task &> /dev/null; then
+        echo -n "[$(task +inbox +PENDING count) "
+    fi
 }
 
 function repo_status
@@ -75,7 +80,7 @@ function vim ()
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
-export PROMPT="%m[$(task_status)] %~ $(repo_status) > "
+export PROMPT="%m$(task_status)%~ $(repo_status) > "
 # export PS1=$PROMPT
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
@@ -87,6 +92,9 @@ alias scp='noglob scp_wrap'
 alias "e=gvim"
 alias "l=ls -Alhx"
 alias "ll=ls"
+alias "getip=ip -br -c a"
+alias "denv=tmux new-session -A -s development"
+
 
 # Aliases -- Taskwarrior
 alias "ta=task add +inbox prio:M"
