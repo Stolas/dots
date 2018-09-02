@@ -16,3 +16,4 @@ git submodule update --init --recursive "${DOTBOT_DIR}"
 # Post install commands
 git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm || true
 vim +PlugInstall +qa
+vim +PlugUpdate +qa
