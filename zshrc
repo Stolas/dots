@@ -84,6 +84,8 @@ export PROMPT="%m$(task_status)%~ $(repo_status) > "
 # export PS1=$PROMPT
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
+[[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
+[[ -f /usr/bin/clang++ ]] && export CXX=/usr/bin/clang++
 
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
