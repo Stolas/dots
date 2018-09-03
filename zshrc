@@ -75,7 +75,6 @@ function vim ()
     command vim --remote-silent "$@" || command vim "$@";
 }
 
-
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
@@ -84,6 +83,8 @@ export PROMPT="%m$(task_status) %~ $(repo_status) > "
 # export PS1=$PROMPT
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
+[[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
+[[ -f /usr/bin/clang++ ]] && export CXX=/usr/bin/clang++
 
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
@@ -94,6 +95,7 @@ alias "l=ls -Alhx"
 alias "ll=ls"
 alias "getip=ip -br -c a"
 alias "denv=tmux new-session -A -s development"
+alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
 
 
 # Aliases -- Taskwarrior
