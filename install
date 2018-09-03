@@ -2,6 +2,8 @@
 
 set -e
 
+git pull || true
+
 CONFIG="install.conf.yaml"
 DOTBOT_DIR="dotbot"
 

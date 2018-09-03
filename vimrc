@@ -88,7 +88,9 @@
 
         " EAsy tabs completions
         Plug 'ervandew/supertab'
-        Plug 'Shougo/deoplete.nvim'
+        if exist("v:false")
+            Plug 'Shougo/deoplete.nvim'
+        endif
 
         " Better TagBar
         Plug 'majutsushi/tagbar'
@@ -103,7 +105,9 @@
         Plug 'vim-scripts/TaskList.vim'
 
         " Preprocsor
-        Plug 'mphe/grayout.vim'
+        if has('python')
+            Plug 'mphe/grayout.vim'
+        endif
 
         " CMake
         Plug 'vhdirk/vim-cmake'
@@ -116,6 +120,9 @@
         " Plug 'Shougo/neosnippet.vim'
         " Plug 'Shougo/neosnippet-snippets'
 
+        " Forgot?
+        Plug 'jeetsukumaran/vim-buffergator'
+
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -126,8 +133,13 @@
     " Language Specific
         " C/ C++ Support
         " Plug 'Rip-Rip/clang_complete'
-        " Plug 'Shougo/neocomplete.vim'
-        Plug 'Valloric/YouCompleteMe'
+        " 7.4.1578+.
+        if v:version > 741
+            Plug 'Valloric/YouCompleteMe'
+        else
+            Plug 'Shougo/neocomplete.vim'
+        endif
+
         " Python Support
         Plug 'davidhalter/jedi-vim'
         " LaTeX Support
@@ -136,7 +148,10 @@
     call plug#end()
     let g:deoplete#enable_at_startup = 1 " Auto Complete
     filetype plugin indent on
-    packadd termdebug   " Terminal Debugger
+
+    if v:version > 799
+        packadd termdebug   " Terminal Debugger
+    endif
 
 "====[ Generic Source Code Editing ]====================
 
@@ -189,8 +204,11 @@
        set statusline+=\ ]
     endif
 
-    if !has('python3') || !has('terminal') || !has('job')
+    if !has('python') || !has('python3') || !has('terminal') || !has('job')
        set statusline+=[Not\ Found\ :\ "
+       if !has('python')
+           set statusline+=Python\ "
+       endif
        if !has('python3')
            set statusline+=Python\ 3\ "
        endif
@@ -519,3 +537,9 @@
     if filereadable(g:propiatryplugs)
         source /home/robin/.vimsecret
     endif
+
+"====[ IDE stuff ]====
+function StartIDE()
+    copen
+    TagbarOpen
+endfunction

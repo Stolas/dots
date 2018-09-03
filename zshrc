@@ -39,7 +39,7 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 function task_status
 {
     if type task &> /dev/null; then
-        echo -n "[$(task +inbox +PENDING count) "
+        echo -n "[$(task +inbox +PENDING count)] "
     fi
 }
 
@@ -80,7 +80,7 @@ function vim ()
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
-export PROMPT="%m$(task_status)%~ $(repo_status) > "
+export PROMPT="%m$(task_status) %~ $(repo_status) > "
 # export PS1=$PROMPT
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
@@ -111,3 +111,6 @@ alias "tW=task waiting"
 # Aliases -- nmcli
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
+
+
+cat ~/.todo
