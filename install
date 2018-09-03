@@ -14,6 +14,6 @@ git submodule update --init --recursive "${DOTBOT_DIR}"
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
 
 # Post install commands
-git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm || true
+git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm 2>/dev/null || true
 vim +PlugInstall +qa
 vim +PlugUpdate +qa
