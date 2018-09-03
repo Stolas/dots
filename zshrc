@@ -75,7 +75,6 @@ function vim ()
     command vim --remote-silent "$@" || command vim "$@";
 }
 
-
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
@@ -96,6 +95,7 @@ alias "l=ls -Alhx"
 alias "ll=ls"
 alias "getip=ip -br -c a"
 alias "denv=tmux new-session -A -s development"
+alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
 
 
 # Aliases -- Taskwarrior
