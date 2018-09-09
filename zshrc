@@ -114,5 +114,4 @@ alias "tW=task waiting"
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
 
-
-cat ~/.todo
+[[ -f ~/.todo ]] && cat ~/.todo
