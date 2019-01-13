@@ -45,9 +45,8 @@ function task_status
 
 function repo_status
 {
-  # Todo;
-  return
-  #echo "(master)"
+    ref=$(git symbolic-ref HEAD | cut -d'/' -f3)
+    echo "[${ref}]"
 }
 
 # Disable globbing on the remote path.
@@ -70,17 +69,12 @@ function taskinfo
     printf "tx : Task Important Task\n"
 }
 
-function vim ()
-{
-    command vim --remote-silent "$@" || command vim "$@";
-}
-
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
+export LANG=en_US.UTF-8
 export PROMPT="%m$(task_status) %~ $(repo_status) > "
-# export PS1=$PROMPT
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
@@ -90,24 +84,28 @@ export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 alias "manzshbuildin=man zshbuiltins"
 alias "manzshmisc=man zshmisc"
 alias scp='noglob scp_wrap'
-alias "e=gvim"
 alias "l=ls -Alhx"
 alias "ll=ls"
+alias "watch=watch -c"
 alias "getip=ip -br -c a"
 alias "denv=tmux new-session -A -s development"
 alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
 
+# Aliases -- Filetypes
+alias -s {tex}=vim
+alias -s {exe}=wine
+alias -s {py}=python
 
 # Aliases -- Taskwarrior
 alias "ta=task add +inbox prio:M"
 alias "ti=taskinfo"
 alias "tl=task inbox"
-alias "tr=task add +read"
-alias "tw=task add +watch prio:L"
 alias "tx=ta prio:H"
 alias "tB=task burndown"
-alias "tb=task add +buy"
 alias "tW=task waiting"
+#alias "tb=task add +buy"
+# alias "tr=task add +read"
+# alias "tw=task add +watch prio:L"
 # Todo: task add Send xxx a birthday card  due:yyyy-mm-dd scheduled:due-4d wait:due-7d util:due+2d recur:yearly prio:H
 
 # Aliases -- nmcli

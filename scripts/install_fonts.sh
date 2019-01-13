@@ -1,5 +1,8 @@
 #! /bin/sh
 ## Borrowed from: https://github.com/christoffer/configs/blob/master/snippets/install-gohu-fonts-ubuntu.sh
+
+# Todo; Should instaoo Gohu, Nerd, Source Code and Hack
+
 set -e
 
 if [ $( whoami ) != "root" ]; then
