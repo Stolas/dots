@@ -45,8 +45,10 @@ function task_status
 
 function repo_status
 {
-    ref=$(git symbolic-ref HEAD | cut -d'/' -f3)
-    echo "[${ref}]"
+#    ref=$(git symbolic-ref HEAD | cut -d'/' -f3)
+#    if [ -n ${ref} ]; then
+#        echo "[${ref}]"
+#    fi
 }
 
 # Disable globbing on the remote path.
@@ -95,6 +97,7 @@ alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
 alias -s {tex}=vim
 alias -s {exe}=wine
 alias -s {py}=python
+alias -s {zip}=unzip -l
 
 # Aliases -- Taskwarrior
 alias "ta=task add +inbox prio:M"
