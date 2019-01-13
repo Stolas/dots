@@ -29,6 +29,7 @@ setopt hist_ignore_space
 # Keys
 bindkey -v
 zle -N history-beginning-search-backward-end history-search-end
+zle_highlight=(default:bold)
 bindkey "^[[A" history-beginning-search-backward-end
 
 # Styles
