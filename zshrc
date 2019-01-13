@@ -116,4 +116,5 @@ alias "tW=task waiting"
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
 
+cat /var/media/status.log || echo "No Log"
 [[ -f ~/.todo ]] && cat ~/.todo
