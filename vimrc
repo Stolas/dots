@@ -63,7 +63,7 @@
         Plug 'mbbill/undotree'
 
         " Syntax checker on file save
-        Plug 'w0rp/ale'
+        " Plug 'w0rp/ale'
 
         " Pretty colours
         Plug 'vim-scripts/darkspectrum'
@@ -88,9 +88,6 @@
 
         " EAsy tabs completions
         Plug 'ervandew/supertab'
-        if exist("v:false")
-            Plug 'Shougo/deoplete.nvim'
-        endif
 
         " Better TagBar
         Plug 'majutsushi/tagbar'
@@ -127,7 +124,7 @@
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
         Plug 'xolox/vim-misc'
-        Plug 'roxma/vim-hug-neovim-rpc'
+        " Plug 'roxma/vim-hug-neovim-rpc'
         Plug 'roxma/nvim-yarp'
 
     " Language Specific
@@ -142,6 +139,7 @@
 
         " Python Support
         Plug 'davidhalter/jedi-vim'
+
         " LaTeX Support
         Plug 'lervag/vimtex'
 
@@ -194,7 +192,7 @@
 "====[ Make the status line do something useful. ]====================
 
     set statusline=%t\                              "tail of the filename
-    set statusline+=\ %{LinterStatus()}           "Syntax Error
+    " set statusline+=\ %{LinterStatus()}           "Syntax Error
     set statusline+=\ \ %{FugitiveHead(5)}\              "Show the current git branch
     set statusline+=%{IsPasteMode()}                "show pastemode state
 
@@ -245,8 +243,9 @@
      call matchadd('ColorColumn', '\%81v', 100)
 
 "====[ Less Aggressive spell checking ]====================
-     highlight clear SpellBad
-     highlight SpellBad cterm=undercurl
+     " Ubuntu hates us; works fine on OpenSuse:
+     " highlight clear SpellBad
+     " highlight SpellBad cterm=undercurl
 
 "====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
     exec "set listchars=tab:\uA6\\ ,trail:\uAF,nbsp:~"
@@ -269,7 +268,6 @@
     nnoremap <F9> :!%:p<cr>
 
 "====[ Swap v and CTRL-V, because Block mode is more useful that Visual mode " ]=
-
     nnoremap    v   <C-V>
     nnoremap <C-V>     v
 
@@ -277,43 +275,43 @@
     vnoremap <C-V>     v
 
 "====[ ALE mode ]=========
-    function! LinterStatus() abort
-        let l:counts = ale#statusline#Count(bufnr(''))
+    " function! LinterStatus() abort
+    "     let l:counts = ale#statusline#Count(bufnr(''))
 
-        let l:all_errors = l:counts.error + l:counts.style_error
-        let l:all_non_errors = l:counts.total - l:all_errors
+    "     let l:all_errors = l:counts.error + l:counts.style_error
+    "     let l:all_non_errors = l:counts.total - l:all_errors
 
-        return l:counts.total == 0 ? 'No Errors' : printf(
-        \   'Warnings: %d Errors: %d',
-        \   all_non_errors,
-        \   all_errors
-        \)
-    endfunction
+    "     return l:counts.total == 0 ? 'No Errors' : printf(
+    "     \   'Warnings: %d Errors: %d',
+    "     \   all_non_errors,
+    "     \   all_errors
+    "     \)
+    " endfunction
 
-    let g:ale_sign_column_always = 1
-    " let g:ale_sign_error = '[!!]'
-    " let g:ale_sign_warning = '[-]'
-    let g:ale_fix_on_save = 1
-    let g:ale_completion_enabled = 1
-    let g:ale_keep_list_window_open = 1
-    let g:ale_linter = {
-    \   'asm': ['gcc'],
-    \   'c': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
-    \   'cpp': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
-    \   'latex': ['chktex','proselint'],
-    \   'python': ['flake8'],
-    \   'r': ['lintr'],
-    \   'text': ['proselint'],
-    \   'vim': ['vint']
-    \}
+    " let g:ale_sign_column_always = 1
+    " " let g:ale_sign_error = '[!!]'
+    " " let g:ale_sign_warning = '[-]'
+    " let g:ale_fix_on_save = 1
+    " let g:ale_completion_enabled = 1
+    " let g:ale_keep_list_window_open = 1
+    " let g:ale_linter = {
+    " \   'asm': ['gcc'],
+    " \   'c': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
+    " \   'cpp': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
+    " \   'latex': ['chktex','proselint'],
+    " \   'python': ['flake8'],
+    " \   'r': ['lintr'],
+    " \   'text': ['proselint'],
+    " \   'vim': ['vint']
+    " \}
 
-    let g:ale_fixer = {
-    \   'asm': ['remote_trailing_lines'],
-    \   'c': ['clang-format'],
-    \   'cpp': ['clang-format'],
-    \   'latex': ['remove_trailing_lines','trim_whitespace'],
-    \   'python': ['autopep8', 'isort'],
-    \}
+    " let g:ale_fixer = {
+    " \   'asm': ['remote_trailing_lines'],
+    " \   'c': ['clang-format'],
+    " \   'cpp': ['clang-format'],
+    " \   'latex': ['remove_trailing_lines','trim_whitespace'],
+    " \   'python': ['autopep8', 'isort'],
+    " \}
 
 "====[ Open any file with a pre-existing swapfile in readonly mode "]=========
     augroup NoSimultaneousEdits
@@ -538,8 +536,8 @@
         source /home/robin/.vimsecret
     endif
 
-"====[ IDE stuff ]====
-function StartIDE()
-    copen
-    TagbarOpen
-endfunction
+" "====[ IDE stuff ]====
+" function !StartIDE()
+"     copen
+"     TagbarOpen
+" endfunction
