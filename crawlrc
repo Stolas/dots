@@ -1,11 +1,19 @@
-hp_colour = 75:yellow, 45:red
-mp_colour = 75:yellow, 45:red
+hp_colour = 75:yellow, 55:red
+mp_colour = 75:yellow, 55:red
 show_gold_turns = true
 show_game_turns = true
 tile_full_screen = false
-autofight_stop = 45
-hp_warning = 60
+tile_show_demon_tier = true
+autofight_stop = 55
+autofight_warning = 75
+hp_warning = 55
+mp_warning = 55
+wiz_mode = never
 
 
 bindkey = [s] CMD_REST
+
+
+$useless := darkgrey
+menu_colour += $useless:random uselessness
 

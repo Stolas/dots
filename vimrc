@@ -86,7 +86,7 @@
         " Fancy Startpage, to easily reach for deep files.
         Plug 'mhinz/vim-startify'
 
-        " EAsy tabs completions
+        " Easy tabs completions
         Plug 'ervandew/supertab'
 
         " Better TagBar
@@ -117,7 +117,7 @@
         " Plug 'Shougo/neosnippet.vim'
         " Plug 'Shougo/neosnippet-snippets'
 
-        " Forgot?
+        " Easily Switch between Buffers
         Plug 'jeetsukumaran/vim-buffergator'
 
     " Bloat for other addons

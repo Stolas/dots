@@ -31,6 +31,7 @@ setopt prompt_subst
 # Keys
 bindkey -v
 zle -N history-beginning-search-backward-end history-search-end
+zle_highlight=(default:bold)
 bindkey "^[[A" history-beginning-search-backward-end
 
 # Styles
@@ -70,19 +71,12 @@ function scp_wrap {
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
 
-
-# function vim ()
-# {
-#     command vim --remote-silent "$@" || command vim "$@";
-# }
-
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
 export PROMPT="%m$(task_status) %~ \$vcs_info_msg_0_ > "
-echo "t"
-# export PS1=$PROMPT
+export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
@@ -92,31 +86,33 @@ export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 alias "manzshbuildin=man zshbuiltins"
 alias "manzshmisc=man zshmisc"
 alias scp='noglob scp_wrap'
-alias "e=gvim"
 alias "l=ls -Alhx"
 alias "ll=ls"
+alias "watch=watch -c"
 alias "getip=ip -br -c a"
 alias "denv=tmux new-session -A -s development"
 alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
 
+# Aliases -- Filetypes
+alias -s {tex}=vim
+alias -s {exe}=wine
+alias -s {py}=python
+alias -s {zip}=unzip -l
 
 # Aliases -- Taskwarrior
 alias "ta=task add +inbox prio:M"
 alias "ti=taskinfo"
 alias "tl=task inbox"
-alias "tr=task add +read"
-alias "tw=task add +watch prio:L"
 alias "tx=ta prio:H"
 alias "tB=task burndown"
-alias "tb=task add +buy"
 alias "tW=task waiting"
+#alias "tb=task add +buy"
+# alias "tr=task add +read"
+# alias "tw=task add +watch prio:L"
 # Todo: task add Send xxx a birthday card  due:yyyy-mm-dd scheduled:due-4d wait:due-7d util:due+2d recur:yearly prio:H
 
 # Aliases -- nmcli
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
-
-# Aliases -- Fck Apt
-alias "zypper=apt"
 
 [[ -f ~/.todo ]] && cat ~/.todo

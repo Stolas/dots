@@ -13,5 +13,6 @@
     ~/.taskrc: taskrc
     ~/.zshrc: zshrc
     ~/.crawlrc: crawlrc
+    ~/.inputrc: inputrc
 
     ~/scripts: scripts
