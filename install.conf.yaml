@@ -4,15 +4,16 @@
     - [git submodule update --init --recursive, Installing submodules]
 
 - link:
+    ~/.Rprofile: Rprofile
     ~/.Xresources: Xresources
-    ~/.tmux.conf: tmux.conf
+    ~/.crawlrc: crawlrc
     ~/.gitconfig: gitconfig
     ~/.gitignore: gitignore
-    ~/.taskrc: taskrc
-    ~/.vimrc: vimrc
-    ~/.taskrc: taskrc
-    ~/.zshrc: zshrc
-    ~/.crawlrc: crawlrc
     ~/.inputrc: inputrc
+    ~/.taskrc: taskrc
+    ~/.taskrc: taskrc
+    ~/.tmux.conf: tmux.conf
+    ~/.vimrc: vimrc
+    ~/.zshrc: zshrc
 
     ~/scripts: scripts

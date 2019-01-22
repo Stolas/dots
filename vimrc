@@ -120,6 +120,12 @@
         " Easily Switch between Buffers
         Plug 'jeetsukumaran/vim-buffergator'
 
+    " Focused Writing
+        Plug 'junegunn/limelight.vim'
+
+    " Markdown Writing
+        Plug 'junegunn/goyo.vim'
+
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
@@ -352,6 +358,36 @@
 "
 "     let g:exploit_copyright = "This file is part of the Raptor exploit pack and is subject\n# to redistribution and commercial restrictions."
 "
+
+"====[ Better Text Editing  ]==
+    let g:limelight_conceal_ctermfg = 240
+    let g:limelight_default_coefficient = 0.7
+    let g:limelight_priority = -1
+
+    function! s:goyo_enter()
+        silent !tmux set status off
+        silent !tmux list-panes -F '\#F' | grep -q Z || tmux resize-pane -Z
+        set noshowmode
+        set noshowcmd
+        set scrolloff=999
+        Limelight
+        " ...
+    endfunction
+
+    function! s:goyo_leave()
+        silent !tmux set status on
+        silent !tmux list-panes -F '\#F' | grep -q Z && tmux resize-pane -Z
+        set showmode
+        set showcmd
+        set scrolloff=5
+        Limelight!
+        " ...
+    endfunction
+
+    " nmap <Leader>l <Plug>(Limelight)
+    " xmap <Leader>l <Plug>(Limelight)
+    " nmap <Leader>g call <SID>goyo_enter()
+    " xmap <Leader>g call <SID>goyo_leave()
 
 "====[ Spell Checking ]===
 
