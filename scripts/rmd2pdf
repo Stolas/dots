@@ -1,0 +1,7 @@
+#!/usr/bin/env Rscript
+if(!require(knitr)) install.packages("knitr",repos = "http://cran.us.r-project.org")
+if(!require(rmarkdown)) install.packages("rmarkdown",repos = "http://cran.us.r-project.org")
+printf <- function(...) invisible(print(sprintf(...)))
+args <- commandArgs(TRUE)
+printf("Building: %s\n", args[1])
+render(args[1], "all")
