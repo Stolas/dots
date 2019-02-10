@@ -47,16 +47,6 @@ function task_status
     fi
 }
 
-function taskinfo
-{
-    printf "ta : Task Add\ttl : Task List\n"
-    printf "tw : Watch Task\ttr : Read Task\n"
-    printf "tb : Buy List\ttB : Task Burndown\n"
-    printf "tW : Show waiting tasks\n"
-    printf "tx : Task Important Task\n"
-}
-
-
 # Disable globbing on the remote path.
 function scp_wrap {
     local -a args
@@ -70,6 +60,12 @@ function scp_wrap {
 
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
+
+function foreach {
+    echo "find . -name \"*$1" # -exec \"$2 \;\""
+    # find . -name "*$1" -exec "$2 \;"
+}
+
 
 # Exports
 export EDITOR="vim"

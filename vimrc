@@ -123,8 +123,11 @@
     " Focused Writing
         Plug 'junegunn/limelight.vim'
 
-    " Markdown Writing
+    " Note Writing
         Plug 'junegunn/goyo.vim'
+
+    " Markdown Writing
+        Plug 'gabrielelana/vim-markdown'
 
     " Bloat for other addons
         Plug 'tomtom/tlib_vim'
@@ -364,31 +367,6 @@
     let g:limelight_default_coefficient = 0.7
     let g:limelight_priority = -1
 
-    function! s:goyo_enter()
-        silent !tmux set status off
-        silent !tmux list-panes -F '\#F' | grep -q Z || tmux resize-pane -Z
-        set noshowmode
-        set noshowcmd
-        set scrolloff=999
-        Limelight
-        " ...
-    endfunction
-
-    function! s:goyo_leave()
-        silent !tmux set status on
-        silent !tmux list-panes -F '\#F' | grep -q Z && tmux resize-pane -Z
-        set showmode
-        set showcmd
-        set scrolloff=5
-        Limelight!
-        " ...
-    endfunction
-
-    " nmap <Leader>l <Plug>(Limelight)
-    " xmap <Leader>l <Plug>(Limelight)
-    " nmap <Leader>g call <SID>goyo_enter()
-    " xmap <Leader>g call <SID>goyo_leave()
-
 "====[ Spell Checking ]===
 
     let b:myLang=0
@@ -488,6 +466,11 @@
     " Tex friendly
     autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab  spell spelllang=en_gb
 
+    " Notes
+    au! BufRead,BufNewFile *.markdown set filetype=mkd
+    au! BufRead,BufNewFile *.md       set filetype=mkd
+    autocmd Filetype md set tabstop=3 softtabstop=3 shiftwidth=3 shiftround smarttab spell spelllang=en_gb noshowmode noshowcmd scrolloff=999 Limelight Goyo
+
 "====[ Remaps ]===
     " Really annoying Ex-mode
     nnoremap Q <nop>
@@ -572,8 +555,18 @@
         source /home/robin/.vimsecret
     endif
 
+<<<<<<< Updated upstream
 " "====[ IDE stuff ]====
 " function !StartIDE()
 "     copen
 "     TagbarOpen
 " endfunction
+=======
+"====[ IDE stuff ]====
+    function StartIDE()
+        copen
+        TagbarOpen
+    endfunction
+
+
+>>>>>>> Stashed changes
