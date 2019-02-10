@@ -6,6 +6,7 @@
 autoload -Uz compinit
 autoload -Uz promptinit
 autoload -U history-search-end
+autoload -Uz vcs_info
 
 # Run
 compinit
@@ -25,6 +26,7 @@ setopt correctall
 setopt extendedglob
 setopt hist_ignore_all_dups
 setopt hist_ignore_space
+setopt prompt_subst
 
 # Keys
 bindkey -v
@@ -35,6 +37,7 @@ bindkey "^[[A" history-beginning-search-backward-end
 # Styles
 zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
 zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
+zstyle ':vcs_info:git:*' formats '[%b]'
 
 # Functions
 function task_status
@@ -44,13 +47,15 @@ function task_status
     fi
 }
 
-function repo_status
+function taskinfo
 {
-#    ref=$(git symbolic-ref HEAD | cut -d'/' -f3)
-#    if [ -n ${ref} ]; then
-#        echo "[${ref}]"
-#    fi
+    printf "ta : Task Add\ttl : Task List\n"
+    printf "tw : Watch Task\ttr : Read Task\n"
+    printf "tb : Buy List\ttB : Task Burndown\n"
+    printf "tW : Show waiting tasks\n"
+    printf "tx : Task Important Task\n"
 }
+
 
 # Disable globbing on the remote path.
 function scp_wrap {
@@ -63,21 +68,15 @@ function scp_wrap {
     command scp "${(@)args}"
 }
 
-function taskinfo
-{
-    printf "ta : Task Add\ttl : Task List\n"
-    printf "tw : Watch Task\ttr : Read Task\n"
-    printf "tb : Buy List\ttB : Task Burndown\n"
-    printf "tW : Show waiting tasks\n"
-    printf "tx : Task Important Task\n"
-}
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
 
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
+export PROMPT="%m$(task_status) %~ \$vcs_info_msg_0_ > "
 export LANG=en_US.UTF-8
-export PROMPT="%m$(task_status) %~ $(repo_status) > "
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
@@ -116,5 +115,4 @@ alias "tW=task waiting"
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
 
-cat /var/media/status.log || echo "No Log"
 [[ -f ~/.todo ]] && cat ~/.todo
