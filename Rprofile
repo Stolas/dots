@@ -1,4 +1,4 @@
-cat("Loading custom .Rprofile")
+cat("Loading custom .Rprofile\n")
 
 # Basic Options
 options(papersize="a4")
@@ -13,8 +13,8 @@ options(digits=2)
 .libPaths( c( .libPaths(), "~/userLibrary") )
 
 # Librarys
-if (!require(crayon)) install.packages('crayon')
-library(crayon)
+# if (!require(crayon)) install.packages('crayon')
+# library(crayon)
 
 # # Setting Repos
 # cat(".Rprofile: Setting UK repositoryn")
