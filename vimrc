@@ -252,9 +252,9 @@
      call matchadd('ColorColumn', '\%81v', 100)
 
 "====[ Less Aggressive spell checking ]====================
-     " Ubuntu hates us; works fine on OpenSuse:
-     " highlight clear SpellBad
-     " highlight SpellBad cterm=undercurl
+     highlight clear SpellBad
+     highlight SpellBad cterm=underline ctermfg=red
+     highlight SpellBad gui=undercurl,bold
 
 "====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
     exec "set listchars=tab:\uA6\\ ,trail:\uAF,nbsp:~"
@@ -282,45 +282,6 @@
 
     vnoremap    v   <C-V>
     vnoremap <C-V>     v
-
-"====[ ALE mode ]=========
-    " function! LinterStatus() abort
-    "     let l:counts = ale#statusline#Count(bufnr(''))
-
-    "     let l:all_errors = l:counts.error + l:counts.style_error
-    "     let l:all_non_errors = l:counts.total - l:all_errors
-
-    "     return l:counts.total == 0 ? 'No Errors' : printf(
-    "     \   'Warnings: %d Errors: %d',
-    "     \   all_non_errors,
-    "     \   all_errors
-    "     \)
-    " endfunction
-
-    " let g:ale_sign_column_always = 1
-    " " let g:ale_sign_error = '[!!]'
-    " " let g:ale_sign_warning = '[-]'
-    " let g:ale_fix_on_save = 1
-    " let g:ale_completion_enabled = 1
-    " let g:ale_keep_list_window_open = 1
-    " let g:ale_linter = {
-    " \   'asm': ['gcc'],
-    " \   'c': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
-    " \   'cpp': ['cppcheck', 'clang', 'flawfinder', 'gcc'],
-    " \   'latex': ['chktex','proselint'],
-    " \   'python': ['flake8'],
-    " \   'r': ['lintr'],
-    " \   'text': ['proselint'],
-    " \   'vim': ['vint']
-    " \}
-
-    " let g:ale_fixer = {
-    " \   'asm': ['remote_trailing_lines'],
-    " \   'c': ['clang-format'],
-    " \   'cpp': ['clang-format'],
-    " \   'latex': ['remove_trailing_lines','trim_whitespace'],
-    " \   'python': ['autopep8', 'isort'],
-    " \}
 
 "====[ Open any file with a pre-existing swapfile in readonly mode "]=========
     augroup NoSimultaneousEdits
@@ -555,18 +516,4 @@
         source /home/robin/.vimsecret
     endif
 
-<<<<<<< Updated upstream
-" "====[ IDE stuff ]====
-" function !StartIDE()
-"     copen
-"     TagbarOpen
-" endfunction
-=======
-"====[ IDE stuff ]====
-    function StartIDE()
-        copen
-        TagbarOpen
-    endfunction
 
-
->>>>>>> Stashed changes

@@ -66,15 +66,18 @@ function foreach {
     # find . -name "*$1" -exec "$2 \;"
 }
 
+prompt gentoo
 
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
-export PROMPT="%m$(task_status) %~ \$vcs_info_msg_0_ > "
+export RPROMPT="\$vcs_info_msg_0_"
 export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
+export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
+export CCACHE_DIR="/var/cache/ccache"
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
 [[ -f /usr/bin/clang++ ]] && export CXX=/usr/bin/clang++
 
@@ -102,6 +105,7 @@ alias "tl=task inbox"
 alias "tx=ta prio:H"
 alias "tB=task burndown"
 alias "tW=task waiting"
+alias "cmus-current=cmus-remote -Q | grep status | cut -d" " -f2"
 #alias "tb=task add +buy"
 # alias "tr=task add +read"
 # alias "tw=task add +watch prio:L"

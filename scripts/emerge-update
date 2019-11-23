@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+emerge --sync
+emerge --update --ask --newuse --deep @world
+emerge --depclean --ask
