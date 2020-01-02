@@ -140,11 +140,11 @@
         " C/ C++ Support
         " Plug 'Rip-Rip/clang_complete'
         " 7.4.1578+.
-        if v:version > 741
-            Plug 'Valloric/YouCompleteMe'
-        else
-            Plug 'Shougo/neocomplete.vim'
-        endif
+        "if v:version > 741
+        "    Plug 'Valloric/YouCompleteMe'
+        "else
+        "    Plug 'Shougo/neocomplete.vim'
+        "endif
 
         " Python Support
         Plug 'davidhalter/jedi-vim'

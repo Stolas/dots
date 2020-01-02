@@ -4,16 +4,27 @@ show_gold_turns = true
 show_game_turns = true
 tile_full_screen = false
 tile_show_demon_tier = true
-autofight_stop = 55
-autofight_warning = 75
-hp_warning = 55
-mp_warning = 55
-wiz_mode = never
+default_manual_training = true
+default_show_all_skills = false
 
+autofight_stop = 65
+autofight_warning = 75
+hp_warning = 75
+mp_warning = 75
 
 bindkey = [s] CMD_REST
-
 
 $useless := darkgrey
 menu_colour += $useless:random uselessness
 
+## Scary shit
+auto_exclude += [^c] wizard, ancient lich, Ereshkigal, Erolcha, eyeball, Grinder, Jory, lich
+auto_exclude += Norris, ogre-mage, orb of eyes, orc sorcerer, Rupert, sphinx, vampire knight
+
+## other uniques and unique followers ##
+auto_exclude += Agnes, Aizul, Arachne, Asterion, Blork, Boris, Crazy Yiuf, Donald, Dowan
+auto_exclude += Duvessa, Edmund, Erica, Eustachio, Fannar, Frances, Frederick, Gastronok
+auto_exclude += Grum, Harold, Ijyb, Jessica, Jorgrun, Joseph, Kirke, Louise, Mara, Maud
+auto_exclude += Maurice, Menkaure, Mennas, Natasha, Nergalle, Nessos, Nikola, Pikel
+auto_exclude += Polyphemus, Prince Ribbit, Psyche, Roxanne, Saint Roka, Sigmund, Snorg
+auto_exclude += Sojobo, Sonja, Terence, Urug, Wiglaf, Xtahua, hog, slave

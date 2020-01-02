@@ -72,7 +72,7 @@ prompt gentoo
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
-export RPROMPT="\$vcs_info_msg_0_"
+export PROMPT="\$vcs_info_msg_0_$PROMPT"
 export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
