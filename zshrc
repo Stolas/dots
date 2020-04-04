@@ -89,8 +89,7 @@ alias "l=ls -Alhx"
 alias "ll=ls"
 alias "watch=watch -c"
 alias "getip=ip -br -c a"
-alias "denv=tmux new-session -A -s development"
-alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
+alias "formatcode=find . -regextype posix-extended -regex '.*\.(c(pp)?|h)$' -exec astyle  {} \;"
 
 # Aliases -- Filetypes
 alias -s {tex}=vim
@@ -116,3 +115,11 @@ alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
 
 [[ -f ~/.todo ]] && cat ~/.todo
+
+
+#                        (\,/)
+#             Always     oo   '''//,        _
+#    ^...^    edit    ,/_;~,        \,    / '
+#   / o,o \   dots     "'   \    (    \    !
+#   |):::(|   from          ',|  \    |__.'
+# ====w=w===  the internet '~  '~----''

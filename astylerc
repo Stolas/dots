@@ -1,0 +1,42 @@
+--style=linux
+--indent=tab=8
+--attach-inlines
+--attach-extern-c
+--attach-closing-while
+--indent-switches
+
+# Todo; not sure
+--indent-preproc-block
+--indent-preproc-define
+####
+
+
+--break-blocks=all
+--pad-oper
+--pad-comma
+--pad-header
+
+--align-pointer=name
+--align-reference=name
+
+--add-braces
+
+--attach-return-type-decl
+--close-templates
+
+--max-code-length=80
+--break-after-logical
+
+--mode=c
+
+
+# Todo;
+# Now:
+#  if (!p) { return; }
+# Becomes:
+#  if (!p) {
+#          return;
+#  }
+#
+# It shouldnt
+

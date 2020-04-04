@@ -6,11 +6,12 @@
 - link:
     ~/.Rprofile: Rprofile
     ~/.Xresources: Xresources
+    ~/.astylerc: astylerc
     ~/.crawlrc: crawlrc
     ~/.gitconfig: gitconfig
     ~/.gitignore: gitignore
     ~/.inputrc: inputrc
-    ~/.taskrc: taskrc
+    ~/.radare2rc: radare2rc
     ~/.taskrc: taskrc
     ~/.tmux.conf: tmux.conf
     ~/.vimrc: vimrc
