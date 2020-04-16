@@ -62,9 +62,6 @@
         " Visualize the undo tree
         Plug 'mbbill/undotree'
 
-        " Syntax checker on file save
-        " Plug 'w0rp/ale'
-
         " Pretty colours
         Plug 'vim-scripts/darkspectrum'
 
@@ -91,9 +88,6 @@
 
         " Better TagBar
         Plug 'majutsushi/tagbar'
-
-        " Auto ctags
-        " Plug 'xolox/vim-easytags'
 
         " Header switcher
         Plug 'kris2k/a.vim'
@@ -318,11 +312,6 @@
     " " ToDo: Something like :TlistAddFilesRecursive {directory} [ {pattern} ]
     nmap <F7> :TagbarToggle<CR>
 
-" "====[ VIM Exploit Development ]==
-"
-"     let g:exploit_copyright = "This file is part of the Raptor exploit pack and is subject\n# to redistribution and commercial restrictions."
-"
-
 "====[ Better Text Editing  ]==
     let g:limelight_conceal_ctermfg = 240
     let g:limelight_default_coefficient = 0.7
@@ -426,6 +415,7 @@
 
     " Tex friendly
     autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab  spell spelllang=en_gb
+    "autocmd FileType tex setlocal foldmethod=expr foldexpr=getline(v:lnum)=~'^\s*%'
 
     " Notes
     au! BufRead,BufNewFile *.markdown set filetype=mkd
@@ -450,6 +440,8 @@
     noremap <C-k><C-o> <Esc>:A<CR>
 
 "===[ Custom Functions ]===
+
+
     function! IsPasteMode()
         if &paste
             return '[PASTE MODE]'
@@ -515,5 +507,3 @@
     if filereadable(g:propiatryplugs)
         source /home/robin/.vimsecret
     endif
-
-
