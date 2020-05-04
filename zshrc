@@ -78,6 +78,7 @@ export SAVEHIST=$HISTSIZE
 export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
 export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
 export CCACHE_DIR="/var/cache/ccache"
+export GOPATH="$HOME/.go"
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
 [[ -f /usr/bin/clang++ ]] && export CXX=/usr/bin/clang++
 
@@ -86,10 +87,17 @@ alias "manzshbuildin=man zshbuiltins"
 alias "manzshmisc=man zshmisc"
 alias scp='noglob scp_wrap'
 alias "l=ls -Alhx"
+alias "m=make -s -j4"
+alias "cm=mkdir b && cd b && cmake .. & m"
 alias "ll=ls"
 alias "watch=watch -c"
 alias "getip=ip -br -c a"
 alias "formatcode=find . -regextype posix-extended -regex '.*\.(c(pp)?|h)$' -exec astyle  {} \;"
+
+# Aliases -- Templating
+TEMPLATE_PATH=$(dirname $(realpath $HOME/.zshrc))/templates
+# echo $TEMPLATE_PATH
+alias new-vuln-research="cp ${TEMPLATE_PATH}/vuln_research/* ."
 
 # Aliases -- Filetypes
 alias -s {tex}=vim
@@ -123,3 +131,6 @@ alias "wlcon=sudo nmcli dev wifi connect"
 #   / o,o \   dots     "'   \    (    \    !
 #   |):::(|   from          ',|  \    |__.'
 # ====w=w===  the internet '~  '~----''
+
+# opam configuration
+test -r /home/stolas/.opam/opam-init/init.zsh && . /home/stolas/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true

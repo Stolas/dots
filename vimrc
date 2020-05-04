@@ -109,6 +109,9 @@
         " CMake
         Plug 'vhdirk/vim-cmake'
 
+        " GoLang
+        Plug 'fatih/vim-go'
+
         " Clang renamer
         Plug 'uplus/vim-clang-rename'
 
