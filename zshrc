@@ -75,7 +75,7 @@ export HISTSIZE=1000
 export PROMPT="\$vcs_info_msg_0_$PROMPT"
 export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
-export PATH=$PATH:$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/
+export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH
 export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
 export CCACHE_DIR="/var/cache/ccache"
 export GOPATH="$HOME/.go"
@@ -93,6 +93,12 @@ alias "ll=ls"
 alias "watch=watch -c"
 alias "getip=ip -br -c a"
 alias "formatcode=find . -regextype posix-extended -regex '.*\.(c(pp)?|h)$' -exec astyle  {} \;"
+alias "denv=tmux new-session -A -s development"
+alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
+alias mc='. /usr/lib/mc/mc-wrapper.sh --nocolor'
+alias "grepuni=grep --color='auto' -P -n \"[\x80-\xFF]\" -R ."
+alias b=buku
+alias doas=sudo
 
 # Aliases -- Templating
 TEMPLATE_PATH=$(dirname $(realpath $HOME/.zshrc))/templates
@@ -122,8 +128,7 @@ alias "cmus-current=cmus-remote -Q | grep status | cut -d" " -f2"
 alias "wlscan=nmcli dev wifi list"
 alias "wlcon=sudo nmcli dev wifi connect"
 
-[[ -f ~/.todo ]] && cat ~/.todo
-
+[[ ! -f /tmp/presentation ]] && [[ -f ~/.todo ]] && cat ~/.todo
 
 #                        (\,/)
 #             Always     oo   '''//,        _
