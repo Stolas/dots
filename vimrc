@@ -7,17 +7,22 @@
 
 "====[ Function Keys ]=======
 "<F1>
-"<F2> Reserved by commercial tool.
+"<F2>
 "<F3>
-"<F4> Fontswitch
+"<F4>
 "<F5> Undotree
-"<F6> Preview LaTeX (commercial)
+"<F6>
 "<F7> TagList
-"<F8> Show / Hide Menu
-"<F9> Run current file
-"<F10> Make
+"<F8>
+"<F9>
+"<F10>
 "<F11>
 "<F12> Todo list
+
+
+" Todo; Add ctags
+
+
 
 "====[ Init Stuff ]======
     " No things for vim-tiny or vim-small
@@ -35,7 +40,6 @@
     endif
 
 "====[ Plug Plugins ]=============
-    " Todo:  Build autoinstall on first run
     let iCanHazPlugz=1
     let plugsrc=expand('~/.vim/autoload/plug.vim')
 
@@ -44,6 +48,7 @@
         if g:isunix==1
             silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         else
+            " Todo;  Build autoinstall on first run For Windows
             echo "INSTALL PLUG"
         endif
 
@@ -100,28 +105,9 @@
             Plug 'mphe/grayout.vim'
         endif
 
-        " CMake
-        Plug 'vhdirk/vim-cmake'
-
-        " GoLang
-        Plug 'fatih/vim-go'
-
-        " Clang renamer
-        Plug 'uplus/vim-clang-rename'
-
-        " Snippets
-        " Todo SirVer/ultisnips for class completion
-        " Plug 'Shougo/neosnippet.vim'
-        " Plug 'Shougo/neosnippet-snippets'
-
-        " Easily Switch between Buffers
-        Plug 'jeetsukumaran/vim-buffergator'
-
     " Focused Writing
-        Plug 'junegunn/limelight.vim'
-
-    " Note Writing
-        Plug 'junegunn/goyo.vim'
+        Plug 'junegunn/limelight.vim' " Colours just the block you are editing
+        Plug 'junegunn/goyo.vim' " Removes all distractions
 
     " Markdown Writing
         Plug 'gabrielelana/vim-markdown'
@@ -130,7 +116,6 @@
         Plug 'tomtom/tlib_vim'
         Plug 'MarcWeber/vim-addon-mw-utils'
         Plug 'xolox/vim-misc'
-        " Plug 'roxma/vim-hug-neovim-rpc'
         Plug 'roxma/nvim-yarp'
 
     " Language Specific
@@ -187,7 +172,6 @@
 
     syntax on
     color darkspectrum                " Pretty Colours
-    " color inkpot
 
 "====[ WildIgnore. ]============
     set wildignore =.*                " Ignore dot files
@@ -208,18 +192,15 @@
        set statusline+=\ ]
     endif
 
-    if !has('python') || !has('python3') || !has('terminal') || !has('job')
+    if !has('python3') || !has('terminal') || !has('job')
        set statusline+=[Not\ Found\ :\ "
-       if !has('python')
-           set statusline+=Python\ "
-       endif
        if !has('python3')
            set statusline+=Python\ 3\ "
        endif
        if !has('terminal')
            set statusline+=Terminal\ "
        endif
-       if !has('python3')
+       if !has('job')
            set statusline+=Job\ "
        endif
        set statusline+=]
@@ -261,17 +242,6 @@
     let g:tlTokenList = ['Todo', 'TODO', 'FixMe']
     let g:tlWindowPosition = 1
     map <F12> <Plug>TaskList
-
-"====[ Set Compiler ]====
-    let g:cmake_c_compiler = "/usr/bin/clang"
-    let g:cmake_cxx_compiler = "/usr/bin/clang++"
-
-"====[ Greyout on a timer ]====
-    " Todo; Get this to work correctly
-    " call timer_start(2000, 'GrayoutUpdate<CR>', {'repeat': -1})
-
-"====[ Execute current file with F9 ]====
-    nnoremap <F9> :!%:p<cr>
 
 "====[ Swap v and CTRL-V, because Block mode is more useful that Visual mode " ]=
     nnoremap    v   <C-V>
@@ -323,7 +293,7 @@
 "====[ Spell Checking ]===
 
     let b:myLang=0
-    let g:myLangList=["nospell", "en_gb", "nl"]
+    let g:myLangList=["nospell", "en_US", "nl"]
     function! ToggleSpell()
         if !exists(b:myLang)
           let b:myLang=0
@@ -352,13 +322,14 @@
 
     if has('gui_running')
         " Remove bloat
-        set guioptions+=c  " Remove pop-ups and use console like stuff
+        " Todo; remove items from menu
+        set mousemodel=popup " Allow Modern mouse usage.
+        set guioptions+=m  " Use menubar
+        " set guioptions+=c  " Remove pop-ups and use console like stuff
         set guioptions-=T  " Remove Toolbar
-        set guioptions+=m  " Remove menubar
         set guioptions-=r  " Remove right-scrollbar
         set guioptions-=L  " Remove left-scrollbar
 
-        " " Todo; Make eays switcher
         " let font_choice_one = DejaVu\ Sans\ Mono\ 10
         " let font_choice_two = Hack\ Regular\ 10
         " " Maybe add Gohu?
@@ -385,9 +356,11 @@
         function! SmallerFont()
             call AdjustFontSize(-1)
         endfunction
+        command! SmallerFont call SmallerFont()
 
         map <S-Up> :LargerFont<cr>
         map <S-Down> :SmallerFont<cr>
+        " Todo; add scoll wheel support.
 
     endif
 
@@ -400,9 +373,9 @@
     if has('persistent_undo')
         silent !mkdir -p ~/.vim/undodir/
         set undodir='~/.vim/undodir/'
-        set undofile
     endif
     nnoremap <F5> :UndotreeToggle<cr>
+    " Todo; test this again.
 
 "====[ File Type Settings ]===
 
@@ -410,7 +383,6 @@
     autocmd Filetype python set smartindent tabstop=4 shiftwidth=4 expandtab
 
     " This is for the C-Things..
-    au FileType c,cpp nmap <buffer><silent>,lr <Plug>(clang_rename-current)
     autocmd Filetype c set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype cpp set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype asm set smartindent tabstop=8 shiftwidth=8 noexpandtab
@@ -423,7 +395,7 @@
     " Notes
     au! BufRead,BufNewFile *.markdown set filetype=mkd
     au! BufRead,BufNewFile *.md       set filetype=mkd
-    autocmd Filetype md set tabstop=3 softtabstop=3 shiftwidth=3 shiftround smarttab spell spelllang=en_gb noshowmode noshowcmd scrolloff=999 Limelight Goyo
+    autocmd Filetype md set tabstop=4 softtabstop=4 shiftwidth=3 shiftround smarttab spell spelllang=en_gb noshowmode noshowcmd scrolloff=999 Limelight Goyo
 
 "====[ Remaps ]===
     " Really annoying Ex-mode
@@ -444,7 +416,6 @@
 
 "===[ Custom Functions ]===
 
-
     function! IsPasteMode()
         if &paste
             return '[PASTE MODE]'
@@ -452,46 +423,6 @@
         return ''
     endfunction
 
-    if has("gui_running")
-        function! ToggleMenuBar()
-            let l:menu_option = strridx(&guioptions, "m")
-            let l:toolbar_option = strridx(&guioptions, "T")
-            if l:menu_option > 0
-                set guioptions-=m
-            else
-                set guioptions+=m
-            endif
-            if l:toolbar_option > 0
-                set guioptions-=T
-            else
-                set guioptions+=T
-            endif
-        endfunction
-
-        command! ToggleMenu call ToggleMenuBar()
-        map <F8> :ToggleMenu<CR>
-
-        let g:font = 1
-        function! ToggleFont()
-            if g:font > 0
-                let g:font = 0
-                set guifont=DejaVu\ Sans\ Mono\ 10
-            else
-                let g:font = 1
-                set guifont=DejaVu\ Sans\ Mono\ 16
-            endif
-        endfunction
-
-         command! ToggleFont call ToggleFont()
-         map <F4> :ToggleFont<CR>
-     endif
-
-"====[ Build and Run ]===
-    let &makeprg = 'if [ -f Makefile ]; then make; else make -C build; fi'
-
-    nmap <F10> :make<CR>
-    imap <F10> :make<CR>
-    imap <F12> terminal gdb -tui /bin/ls<CR>
 
 "====[ From VIM-Sensible ]====
     set nrformats-=octal
@@ -502,11 +433,4 @@
 
     if v:version > 703 || v:version == 703 && has("patch541")
         set formatoptions+=j " Delete comment character when joining commented lines
-    endif
-
-"====[ Propiatry Plugins ]====
-    let g:propiatryplugs=expand('~/.vimsecret')
-
-    if filereadable(g:propiatryplugs)
-        source /home/robin/.vimsecret
     endif

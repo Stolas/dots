@@ -1,24 +1,20 @@
 # Read: http://bewatermyfriend.org/p/2012/003/
 # man zshbuiltins
 # man zshmisc
-
 # Autoload
 autoload -Uz compinit
 autoload -Uz promptinit
 autoload -U history-search-end
 autoload -Uz vcs_info
-
 # Run
 compinit
 promptinit
-
 # Always update Xresouces
 if type xrdb &> /dev/null; then
     [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 fi
 # Reminder to never do the thing below again.
 # [[ -z "$TMUX" ]] && tmux new-session -A -s default
-
 # Set Opt
 setopt autocd
 setopt automenu
@@ -27,12 +23,12 @@ setopt extendedglob
 setopt hist_ignore_all_dups
 setopt hist_ignore_space
 setopt prompt_subst
-
 # Keys
 bindkey -v
 zle -N history-beginning-search-backward-end history-search-end
 zle_highlight=(default:bold)
 bindkey "^[[A" history-beginning-search-backward-end
+bindkey '^R' history-incremental-search-backward
 
 # Styles
 zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
@@ -40,13 +36,6 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 zstyle ':vcs_info:git:*' formats '[%b]'
 
 # Functions
-function task_status
-{
-    if type task &> /dev/null; then
-        echo -n "[$(task +inbox +PENDING count)] "
-    fi
-}
-
 # Disable globbing on the remote path.
 function scp_wrap {
     local -a args
@@ -58,48 +47,30 @@ function scp_wrap {
     command scp "${(@)args}"
 }
 
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
-
-function foreach {
-    echo "find . -name \"*$1" # -exec \"$2 \;\""
-    # find . -name "*$1" -exec "$2 \;"
-}
-
-prompt gentoo
-
+#prompt gentoo
+#prompt suse
 # Exports
-export EDITOR="vim"
+export EDITOR="gvim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
-export PROMPT="\$vcs_info_msg_0_$PROMPT"
+export PROMPT="%d λ "
 export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
-export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH
+export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH:$HOME/.gem/ruby/2.7.0/bin
 export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
 export CCACHE_DIR="/var/cache/ccache"
-export GOPATH="$HOME/.go"
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
 [[ -f /usr/bin/clang++ ]] && export CXX=/usr/bin/clang++
-
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
 alias "manzshmisc=man zshmisc"
 alias scp='noglob scp_wrap'
 alias "l=ls -Alhx"
-alias "m=make -s -j4"
-alias "cm=mkdir b && cd b && cmake .. & m"
+alias "m=make -s -j$(nproc)"
 alias "ll=ls"
 alias "watch=watch -c"
 alias "getip=ip -br -c a"
 alias "formatcode=find . -regextype posix-extended -regex '.*\.(c(pp)?|h)$' -exec astyle  {} \;"
-alias "denv=tmux new-session -A -s development"
-alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
-alias mc='. /usr/lib/mc/mc-wrapper.sh --nocolor'
-alias "grepuni=grep --color='auto' -P -n \"[\x80-\xFF]\" -R ."
-alias b=buku
-alias doas=sudo
-
 # Aliases -- Templating
 TEMPLATE_PATH=$(dirname $(realpath $HOME/.zshrc))/templates
 # echo $TEMPLATE_PATH
@@ -112,21 +83,13 @@ alias -s {py}=python
 alias -s {zip}=unzip -l
 
 # Aliases -- Taskwarrior
-alias "ta=task add +inbox prio:M"
-alias "ti=taskinfo"
-alias "tl=task inbox"
-alias "tx=ta prio:H"
-alias "tB=task burndown"
-alias "tW=task waiting"
-alias "cmus-current=cmus-remote -Q | grep status | cut -d" " -f2"
-#alias "tb=task add +buy"
-# alias "tr=task add +read"
-# alias "tw=task add +watch prio:L"
-# Todo: task add Send xxx a birthday card  due:yyyy-mm-dd scheduled:due-4d wait:due-7d util:due+2d recur:yearly prio:H
+alias "doom=crispy-doom -iwad ~/Games/DooM/iwad/DOOM2.WAD"
+alias "doom-fast=crispy-doom -fast -iwad ~/Games/DooM/iwad/DOOM2.WAD"
 
-# Aliases -- nmcli
-alias "wlscan=nmcli dev wifi list"
-alias "wlcon=sudo nmcli dev wifi connect"
+
+gvim () { command gvim --remote-silent "$@" || command gvim "$@"; }
+alias "vim=gvim"
+
 
 [[ ! -f /tmp/presentation ]] && [[ -f ~/.todo ]] && cat ~/.todo
 
@@ -137,5 +100,9 @@ alias "wlcon=sudo nmcli dev wifi connect"
 #   |):::(|   from          ',|  \    |__.'
 # ====w=w===  the internet '~  '~----''
 
+
 # opam configuration
 test -r /home/stolas/.opam/opam-init/init.zsh && . /home/stolas/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
