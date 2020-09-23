@@ -33,6 +33,7 @@ bindkey -v
 zle -N history-beginning-search-backward-end history-search-end
 zle_highlight=(default:bold)
 bindkey "^[[A" history-beginning-search-backward-end
+bindkey '^R' history-incremental-search-backward
 
 # Styles
 zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
@@ -66,16 +67,18 @@ function foreach {
     # find . -name "*$1" -exec "$2 \;"
 }
 
-prompt gentoo
+#prompt gentoo
+#prompt suse
 
 # Exports
 export EDITOR="vim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
-export PROMPT="\$vcs_info_msg_0_$PROMPT"
+#export PROMPT="\$vcs_info_msg_0_$PROMPT"
+export PROMPT="%d λ "
 export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
-export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH
+export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH:/home/robin/.gem/ruby/2.5.0/bin
 export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
 export CCACHE_DIR="/var/cache/ccache"
 export GOPATH="$HOME/.go"
@@ -96,7 +99,6 @@ alias "formatcode=find . -regextype posix-extended -regex '.*\.(c(pp)?|h)$' -exe
 alias "denv=tmux new-session -A -s development"
 alias "keepbuilding=while [ true ]; do make -s; sleep 2; clear; done"
 alias mc='. /usr/lib/mc/mc-wrapper.sh --nocolor'
-alias "grepuni=grep --color='auto' -P -n \"[\x80-\xFF]\" -R ."
 alias b=buku
 alias doas=sudo
 

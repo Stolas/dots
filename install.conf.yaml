@@ -4,8 +4,6 @@
     - [git submodule update --init --recursive, Installing submodules]
 
 - link:
-    ~/.Rprofile: Rprofile
-    ~/.Xresources: Xresources
     ~/.astylerc: astylerc
     ~/.crawlrc: crawlrc
     ~/.gitconfig: gitconfig
