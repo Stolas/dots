@@ -49,7 +49,6 @@ function scp_wrap {
 
 #prompt gentoo
 #prompt suse
-# Exports
 export EDITOR="gvim"
 export HISTFILE=~/.histfile
 export HISTSIZE=1000
