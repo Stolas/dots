@@ -60,6 +60,7 @@ export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
 export CCACHE_DIR="/var/cache/ccache"
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
 [[ -f /usr/bin/clang++ ]] && export CXX=/usr/bin/clang++
+
 # Aliases
 alias "manzshbuildin=man zshbuiltins"
 alias "manzshmisc=man zshmisc"
@@ -70,10 +71,6 @@ alias "ll=ls"
 alias "watch=watch -c"
 alias "getip=ip -br -c a"
 alias "formatcode=find . -regextype posix-extended -regex '.*\.(c(pp)?|h)$' -exec astyle  {} \;"
-# Aliases -- Templating
-TEMPLATE_PATH=$(dirname $(realpath $HOME/.zshrc))/templates
-# echo $TEMPLATE_PATH
-alias new-vuln-research="cp ${TEMPLATE_PATH}/vuln_research/* ."
 
 # Aliases -- Filetypes
 alias -s {tex}=vim
