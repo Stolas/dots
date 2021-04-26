@@ -9,11 +9,11 @@ default.priority=M
 urgency.user.tag.inbox.coefficient=15.0
 
 # Report
-report.inbox.columns           = id,description,priority,urgency
-report.inbox.description       = Inbox
-report.inbox.filter            = status:pending limit:page (+inbox)
-report.inbox.labels            = ID,Description,P,Urg
-report.inbox.sort              = urgency
+report.inbox.columns         = id,description,priority,urgency
+report.inbox.description     = Inbox
+report.inbox.filter          = status:pending limit:page (+inbox)
+report.inbox.labels          = ID,Description,P,Urg
+report.inbox.sort            = urgency
 
 report.all.columns           = id,description,priority,urgency
 report.all.description       = All

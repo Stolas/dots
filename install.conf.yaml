@@ -8,11 +8,12 @@
     ~/.crawlrc: crawlrc
     ~/.gitconfig: gitconfig
     ~/.gitignore: gitignore
-    ~/.inputrc: inputrc
-    ~/.radare2rc: radare2rc
     ~/.taskrc: taskrc
     ~/.tmux.conf: tmux.conf
     ~/.vimrc: vimrc
+    ~/.xmonad/xmobarrc.hs: xmobarrc.hs
+    ~/.xmonad/xmonad.hs: xmonad.hs
     ~/.zshrc: zshrc
+    ~/.xmonad/startup.sh: xmonad_startup.sh
 
     ~/scripts: scripts

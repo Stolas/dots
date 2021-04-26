@@ -55,7 +55,7 @@ export HISTSIZE=1000
 export PROMPT="%d λ "
 export LANG=en_US.UTF-8
 export SAVEHIST=$HISTSIZE
-export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH:$HOME/.gem/ruby/2.7.0/bin
+export PATH=$HOME/scripts/:$HOME/.local/bin/:$HOME/bin/:$PATH
 export PATH="/usr/lib/ccache/bin${PATH:+:}$PATH"
 export CCACHE_DIR="/var/cache/ccache"
 [[ -f /usr/bin/clang ]] && export CC=/usr/bin/clang
@@ -84,7 +84,7 @@ alias "doom-fast=crispy-doom -fast -iwad ~/Games/DooM/iwad/DOOM2.WAD"
 
 
 gvim () { command gvim --remote-silent "$@" || command gvim "$@"; }
-alias "vim=gvim"
+#alias "vim=gvim"
 
 
 [[ ! -f /tmp/presentation ]] && [[ -f ~/.todo ]] && cat ~/.todo
@@ -99,6 +99,3 @@ alias "vim=gvim"
 
 # opam configuration
 test -r /home/stolas/.opam/opam-init/init.zsh && . /home/stolas/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-
