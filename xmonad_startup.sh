@@ -1,1 +1,1 @@
-lxsession &
+# lxsession &

@@ -35,16 +35,18 @@ import qualified XMonad.StackSet as W
 
 
 myLauncher = "rofi -show run"
+myRootLauncher = "sudo rofi -show run"
 mySwitcher = "rofi -show window"
 myTerminal = "konsole"
 mySelectScreenshot = "screenshot-tool"
 
-myWorkspaces = ["1: term","2: web","3: code","4: media"] ++ map show [5..9]
+myWorkspaces = ["1: term","2: web","3: research","4: media"] ++ map show [5..9]
 
 
 myManageHook = composeAll
     [
         className =? "firefox"  --> doShift "2:web"
+      , className =? "virt-manager"  --> doShift "3:research"
       , className =? "zoom"     --> doFloat
       , className =? "screenshot-tool"     --> doFloat
 --      , role =? "pop-up" 	--> doFloat
@@ -65,7 +67,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. shiftMask, xK_q), kill)
   , ((modMask, xK_b), sendMessage ToggleStruts)
   , ((modMask, xK_f), sendMessage $ Toggle FULL)
+  , ((modMask .|. shiftMask, xK_space), withFocused $ windows . W.sink) -- Sink a floating window back into tiling
   , ((modMask, xK_p), spawn myLauncher)
+  , ((modMask, xK_P), spawn myRootLauncher)
   , ((modMask, xK_Tab), spawn mySwitcher)
   , ((0, xF86XK_AudioMute), spawn "amixer -q set Master toggle")
   , ((0, xF86XK_AudioLowerVolume), spawn "amixer -q set Master 5%-")
@@ -92,6 +96,7 @@ myStartupHook = do
   setWMName "LG3D"
   spawn     "bash ~/.xmonad/startup.sh"
   setDefaultCursor xC_left_ptr
+
 
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc.hs"

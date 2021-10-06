@@ -48,9 +48,9 @@ Config {
                                                    -- discharging status
                                                    , "-o"   , "<left>% (<timeleft>)"
                                                    -- AC "on" status
-                                                   , "-O"   , "<left>% (<fc=#98be65>Charging</fc>)" -- 50fa7b
+                                                   , "-O"   , "<left>% (<fc=#98be65> 🔌 Charging</fc>)" -- 50fa7b
                                                    -- charged status
-                                                   , "-i"   , "<fc=#98be65>Charged</fc>"
+                                                   , "-i"   , "<fc=#98be65> 🔋 Charged</fc>"
                                          ] 50
                     , Run StdinReader
                     ]
@@ -58,3 +58,6 @@ Config {
        , alignSep = "}{"
        , template = "%StdinReader% }{ %cpu% | %coretemp% | %memory% | %battery% | %dynnetwork% | %date%  |"   -- #69DFFA
        }
+
+--, Run Com "/home/chris/.config/xmobar/trayer-padding-icon.sh" [] "trayerpad" 124 
+-- http://dotshare.it/dots/8422/

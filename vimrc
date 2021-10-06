@@ -134,6 +134,12 @@
         " LaTeX Support
         Plug 'lervag/vimtex'
 
+        " Godot
+        Plug 'habamax/vim-godot'
+
+        " CodeQL
+        Plug 'Stolas/codeql.vim'
+
     call plug#end()
     let g:deoplete#enable_at_startup = 1 " Auto Complete
     filetype plugin indent on
@@ -167,6 +173,7 @@
     set nofoldenable                  " We hate folding
     set directory^=$HOME/.vim/tmp/    " Dont make a mess out of my filesystem
     set complete=.,w,b,u,t,i          " Vim can help me being less dyslectic
+    set vb t_vb=                      " No bell
 
     set background=dark               " Dark Background
 
@@ -413,6 +420,11 @@
     " Visual Studio Header Body Switch (requires a.vim)
     inoremap <C-k><C-o> <Esc>:A<CR>
     noremap <C-k><C-o> <Esc>:A<CR>
+
+"===[ GoDot ]===
+    if g:isunix==1
+        let g:godot_executable = '/usr/bin/godot'
+    endif
 
 "===[ Custom Functions ]===
 
