@@ -46,10 +46,8 @@
     if !filereadable(plugsrc)
         let iCanHazPlugz=0
         if g:isunix==1
-            silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            silent !executable('curl') -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         else
-            " Todo;  Build autoinstall on first run For Windows
-            echo "INSTALL PLUG"
         endif
 
         if iCanHazPlugz==1
@@ -94,22 +92,10 @@
         " Better TagBar
         Plug 'majutsushi/tagbar'
 
-        " Header switcher
-        Plug 'kris2k/a.vim'
-
         " Fixme list
         Plug 'vim-scripts/TaskList.vim'
 
-        " Preprocsor
-        if has('python')
-            Plug 'mphe/grayout.vim'
-        endif
-
-    " Focused Writing
-        Plug 'junegunn/limelight.vim' " Colours just the block you are editing
-        Plug 'junegunn/goyo.vim' " Removes all distractions
-
-    " Markdown Writing
+        " Markdown Writing
         Plug 'gabrielelana/vim-markdown'
 
     " Bloat for other addons
@@ -119,26 +105,14 @@
         Plug 'roxma/nvim-yarp'
 
     " Language Specific
-        " C/ C++ Support
-        " Plug 'Rip-Rip/clang_complete'
-        " 7.4.1578+.
-        "if v:version > 741
-        "    Plug 'Valloric/YouCompleteMe'
-        "else
-        "    Plug 'Shougo/neocomplete.vim'
-        "endif
+        " LSP Support
+        Plug 'prabirshrestha/vim-lsp'
+
+        " Snort Support
+        Plug 'sploit/snort-vim'
 
         " Python Support
         Plug 'davidhalter/jedi-vim'
-
-        " LaTeX Support
-        Plug 'lervag/vimtex'
-
-        " Godot
-        Plug 'habamax/vim-godot'
-
-        " CodeQL
-        Plug 'Stolas/codeql.vim'
 
     call plug#end()
     let g:deoplete#enable_at_startup = 1 " Auto Complete
@@ -173,12 +147,31 @@
     set nofoldenable                  " We hate folding
     set directory^=$HOME/.vim/tmp/    " Dont make a mess out of my filesystem
     set complete=.,w,b,u,t,i          " Vim can help me being less dyslectic
-    set vb t_vb=                      " No bell
 
     set background=dark               " Dark Background
 
     syntax on
     color darkspectrum                " Pretty Colours
+
+"====[ Language Servers ]=======
+    if executable('clangd')
+        au User lsp_setup call lsp#register_server({
+                    \ 'name': 'clangd',
+                    \ 'cmd': {server_info->['clangd']},
+                    \ 'alloclist': ['cpp', 'cc', 'h'],
+                    \})
+    endif
+    function! s:on_lsp_buffer_enabled() abort
+        setlocal omnifunc=lsp#complete
+        setlocal signcolumn=yes
+        if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+        let g:lsp_format_sync_timeout = 1000
+        autocmd! BufWritePre *.cpp,*.cc,*.h call execute('LspDocumentFormatSync')
+    endfunction
+    augroup lsp_install
+        au!
+        autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+    augroup END
 
 "====[ WildIgnore. ]============
     set wildignore =.*                " Ignore dot files
@@ -233,8 +226,8 @@
      let g:startify_session_dir = '~/.vim/session'
 
 "====[ Make the 81st column of wide lines stand out.. ]====================
-     highlight ColorColumn ctermbg=magenta guibg=#dc322f
-     call matchadd('ColorColumn', '\%81v', 100)
+    let colorcolumn=150
+    hi ColorColumn guibg=#272727 ctermbg=0
 
 "====[ Less Aggressive spell checking ]====================
      highlight clear SpellBad
@@ -272,7 +265,7 @@
     let g:ctrlp_funky_syntax_highlight = 1
 
     "The Silver Searcher
-    if executable('/usr/bin/ag')
+    if executable('ag')
         " Use ag over grep
         set grepprg=ag\ --nogroup\ --nocolor
 
@@ -284,6 +277,7 @@
     endif
 
 "====[ TagList ]=====
+    let g:tagbar_ctags_bin=executable('ctags')
     " let Tlist_Ctags_Cmd='/usr/bin/ctags'
     " let Tlist_GainFocus_On_ToggleOpen = 1
     " let Tlist_Close_On_Select = 1
@@ -291,11 +285,6 @@
     " let Tlist_File_Fold_Auto_Close = 1
     " " ToDo: Something like :TlistAddFilesRecursive {directory} [ {pattern} ]
     nmap <F7> :TagbarToggle<CR>
-
-"====[ Better Text Editing  ]==
-    let g:limelight_conceal_ctermfg = 240
-    let g:limelight_default_coefficient = 0.7
-    let g:limelight_priority = -1
 
 "====[ Spell Checking ]===
 
@@ -340,7 +329,8 @@
         " let font_choice_one = DejaVu\ Sans\ Mono\ 10
         " let font_choice_two = Hack\ Regular\ 10
         " " Maybe add Gohu?
-        set guifont=Hack\ Regular\ 10
+        "set guifont=Hack\ Regular\ 10
+        set guifont=Hack:h12:cANSI:qDRAFT
 
         let s:pattern = '^\(.* \)\([1-9][0-9]*\)$'
         let s:minfontsize = 6
@@ -390,19 +380,20 @@
     autocmd Filetype python set smartindent tabstop=4 shiftwidth=4 expandtab
 
     " This is for the C-Things..
-    autocmd Filetype c set smartindent tabstop=8 shiftwidth=8 noexpandtab
+    autocmd Filetype c   set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype cpp set smartindent tabstop=8 shiftwidth=8 noexpandtab
     autocmd Filetype asm set smartindent tabstop=8 shiftwidth=8 noexpandtab
-    autocmd Filetype s set smartindent tabstop=8 shiftwidth=8 noexpandtab
+    autocmd Filetype s   set smartindent tabstop=8 shiftwidth=8 noexpandtab
 
     " Tex friendly
     autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab  spell spelllang=en_gb
     "autocmd FileType tex setlocal foldmethod=expr foldexpr=getline(v:lnum)=~'^\s*%'
 
-    " Notes
+    " Research
     au! BufRead,BufNewFile *.markdown set filetype=mkd
-    au! BufRead,BufNewFile *.md       set filetype=mkd
-    autocmd Filetype md set tabstop=4 softtabstop=4 shiftwidth=3 shiftround smarttab spell spelllang=en_gb noshowmode noshowcmd scrolloff=999 Limelight Goyo
+    au! BufRead,BufNewFile *.md       set filetype=mkd syntax=markdown colorcolumn=125
+    au! BufRead,BufNewFile *.snort    set syntax=hog
+    autocmd Filetype md set tabstop=4 softtabstop=4 shiftwidth=3 shiftround smarttab spell spelllang=en_gb noshowmode noshowcmd scrolloff=999
 
 "====[ Remaps ]===
     " Really annoying Ex-mode
@@ -415,15 +406,6 @@
     if has("gui_running")
         map  <silent>  <S-Insert>  "+p
         imap <silent>  <S-Insert>  <Esc>"+pa
-    endif
-
-    " Visual Studio Header Body Switch (requires a.vim)
-    inoremap <C-k><C-o> <Esc>:A<CR>
-    noremap <C-k><C-o> <Esc>:A<CR>
-
-"===[ GoDot ]===
-    if g:isunix==1
-        let g:godot_executable = '/usr/bin/godot'
     endif
 
 "===[ Custom Functions ]===
