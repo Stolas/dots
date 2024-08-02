@@ -1,7 +1,3 @@
-[user]
-    name = Robin Vossen
-    email = robin@codeinject.org
-
 [core]
     editor = vim
 
