@@ -152,6 +152,7 @@
 
     syntax on
     color darkspectrum                " Pretty Colours
+    " color darkblue                " Pretty Colours
 
 "====[ Language Servers ]=======
     if executable('clangd')
@@ -329,8 +330,8 @@
         " let font_choice_one = DejaVu\ Sans\ Mono\ 10
         " let font_choice_two = Hack\ Regular\ 10
         " " Maybe add Gohu?
-        "set guifont=Hack\ Regular\ 10
-        set guifont=Hack:h12:cANSI:qDRAFT
+        set guifont=Hack\ Regular\ 10
+        " set guifont=Hack:h12:cANSI:qDRAFT
 
         let s:pattern = '^\(.* \)\([1-9][0-9]*\)$'
         let s:minfontsize = 6
@@ -369,7 +370,7 @@
 "====[ Undo Tree ]===
     if has('persistent_undo')
         silent !mkdir -p ~/.vim/undodir/
-        set undodir='~/.vim/undodir/'
+        set undodir="~/.vim/undodir/"
     endif
     nnoremap <F5> :UndotreeToggle<cr>
     " Todo; test this again.

@@ -37,3 +37,6 @@
 [merge]
     tool = vimdiff
     stat = true
+[user]
+	email = 610753+Stolas@users.noreply.github.com
+	name = Stolas
