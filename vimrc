@@ -381,10 +381,10 @@
     autocmd Filetype python set smartindent tabstop=4 shiftwidth=4 expandtab
 
     " This is for the C-Things..
-    autocmd Filetype c   set smartindent tabstop=8 shiftwidth=8 noexpandtab
-    autocmd Filetype cpp set smartindent tabstop=8 shiftwidth=8 noexpandtab
-    autocmd Filetype asm set smartindent tabstop=8 shiftwidth=8 noexpandtab
-    autocmd Filetype s   set smartindent tabstop=8 shiftwidth=8 noexpandtab
+    autocmd Filetype c   set smartindent tabstop=4 shiftwidth=4 expandtab
+    autocmd Filetype cpp set smartindent tabstop=4 shiftwidth=4 expandtab
+    autocmd Filetype asm set smartindent tabstop=4 shiftwidth=4 expandtab
+    autocmd Filetype s   set smartindent tabstop=4 shiftwidth=4 expandtab
 
     " Tex friendly
     autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab  spell spelllang=en_gb
