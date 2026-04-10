@@ -3,429 +3,963 @@
 "**  Also I never forget the folks at http://www.vimbits.com/
 "**  /r/vim gave me a number of tips.
 "**  The newest tips came from Amir Salihefendic ( http://amix.dk/vim/vimrc.html )
+"**  Guess what, it happend.. Claude fixed a bunch of things on my todo list.
 "*****
+"
+"==============================================================================
+" FUNCTION KEY MAP (quick reference)
+"==============================================================================
+" <F5>       Undotree toggle
+" <F6>       Termdebug: Start debugger
+" <F7>       Tagbar toggle
+" <F8>       Termdebug: Step Over
+" <F9>       Termdebug: Step Into
+" <F12>      TaskList (TODO/FIXME browser)
+"
+" LEADER MAP (quick reference — <Space> is leader)
+" <leader>ff/fb/fg/ft/fh  FZF: Files/Buffers/Rg/Tags/History
+" <leader>gd/gr/K          LSP: definition/references/hover
+" <leader>rn/<leader>ca    LSP: rename/code-action
+" <leader>lf               LSP: format buffer
+" <leader>m / :make        Build (cmake --build or make, auto-detected)
+" <leader>mj               :make --target <name> (partial build)
+" <leader>af               ALE: fix (clang-format / black / isort)
+" <leader>Ce/Ca/Cr/Cs      Claude: Explain/Audit/Review/Summarise
+" <leader>hx               Toggle hex/xxd view
+" <leader>ss               Cycle spell language
+" <leader>br/<leader>de    Debugger: breakpoint/evaluate
+"==============================================================================
 
-"====[ Function Keys ]=======
-"<F1>
-"<F2>
-"<F3>
-"<F4>
-"<F5> Undotree
-"<F6>
-"<F7> TagList
-"<F8>
-"<F9>
-"<F10>
-"<F11>
-"<F12> Todo list
+"==============================================================================
+" [ 1. INITIALIZATION & ENVIRONMENT ]
+"==============================================================================
 
+" Bail out if this Vim is too old to understand basic expressions.
+if !1 | finish | endif
 
-" Todo; Add ctags
+" Force nocompatible mode (required for all modern features).
+if &cp | set nocompatible | endif
 
+" -- Platform detection --------------------------------------------------------
+let g:is_windows = has('win16') || has('win32') || has('win64')
+let g:is_freebsd = has('bsd')
 
+" -- Encoding ------------------------------------------------------------------
+" Only force UTF-8 in GUI; terminal encoding is the terminal's job.
+if &encoding ==# 'latin1' && has('gui_running')
+    set encoding=utf-8
+endif
 
-"====[ Init Stuff ]======
-    " No things for vim-tiny or vim-small
-    if !1 | finish | endif
+" -- vim-plug auto-install -----------------------------------------------------
+" Installs plug.vim if it's missing, then triggers PlugInstall on next launch.
+let s:plug_src = expand('~/.vim/autoload/plug.vim')
+if !filereadable(s:plug_src)
+    if g:is_windows
+        silent !powershell -NoProfile -Command ^
+            "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'" ^
+            "-OutFile (New-Item -Force '$HOME/vimfiles/autoload/plug.vim')"
+    elseif executable('curl')
+        silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+            \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    elseif executable('fetch')
+        " FreeBSD fetch
+        silent !fetch -o ~/.vim/autoload/plug.vim
+            \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    endif
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-    if has('vim_starting')
-        if $compatible
-            set nocompatible  " No vi.
+"==============================================================================
+" [ 2. PLUGINS ]
+"==============================================================================
+call plug#begin()
+
+" -- Navigation & Project ------------------------------------------------------
+Plug 'airblade/vim-rooter'              " Auto-lcd to project root (.git etc.)
+Plug 'mhinz/vim-startify'               " Fancy start screen + session manager
+Plug 'tpope/vim-vinegar'                " Enhanced netrw ('-' to explore)
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'                 " Files, Buffers, Rg, Tags fuzzy search
+Plug 'mbbill/undotree'                  " Visual undo history (<F5>)
+
+" -- LSP & Completion ----------------------------------------------------------
+" Using prabirshrestha stack — pure Vimscript, no external Node dependency.
+Plug 'prabirshrestha/vim-lsp'                  " Core async LSP client
+Plug 'prabirshrestha/asyncomplete.vim'         " Async completion engine
+Plug 'prabirshrestha/asyncomplete-lsp.vim'     " LSP completion source
+
+" -- Code Navigation -----------------------------------------------------------
+Plug 'majutsushi/tagbar'                " Symbol browser powered by ctags (<F7>)
+Plug 'kshenoy/vim-signature'            " Show marks in the sign column
+
+" -- VCS -----------------------------------------------------------------------
+Plug 'tpope/vim-fugitive'               " Full Git wrapper (:Git, :Gblame, etc.)
+
+" -- Language Support ----------------------------------------------------------
+Plug 'gabrielelana/vim-markdown'        " Markdown (pentest/research reports)
+Plug 'sploit/snort-vim'                 " Snort/Suricata rule syntax
+Plug 'vim-scripts/TaskList.vim'         " <F12> — browse TODO/FIXME/HACK tags
+Plug 'peterhoeg/vim-qml'               " QML syntax + indent
+
+" -- CMake ---------------------------------------------------------------------
+" vim-cmake only supports Neovim on Windows
+if !g:is_windows || has('nvim')
+    Plug 'cdelledonne/vim-cmake'        " CMake project integration
+endif
+
+" -- Linting / Formatting ------------------------------------------------------
+" vim-lsp already drives clang-tidy diagnostics via clangd.
+" ale is added for cases without an LSP (shell scripts, makefiles, etc.)
+Plug 'dense-analysis/ale'               " Async Lint Engine (fallback linter)
+
+" -- Visuals -------------------------------------------------------------------
+Plug 'vim-scripts/darkspectrum'         " Dark legacy colorscheme
+Plug 'bronson/vim-trailing-whitespace'  " Highlight/strip trailing whitespace
+
+call plug#end()
+
+" Required after plug#end() — enable filetype detection and syntax.
+filetype plugin indent on
+syntax on
+
+"==============================================================================
+" [ 3. CORE SETTINGS ]
+"==============================================================================
+
+" -- Leader --------------------------------------------------------------------
+let mapleader = "\<Space>"
+
+" -- Editing behaviour ---------------------------------------------------------
+set expandtab               " Spaces not tabs (per-filetype overrides below)
+set shiftwidth=4            " Indent width
+set tabstop=4               " Tab display width
+set softtabstop=4           " Backspace over spaces like tabs
+set smarttab                " Use shiftwidth when inserting a tab at BOL
+set autoread                " Reload file if changed outside Vim
+set hidden                  " Allow unsaved buffers in background
+set mouse=a                 " Full mouse support
+set nofoldenable            " No folding — distracting in kernel/llvm trees
+set scrolloff=5             " Keep 5 lines of context around cursor
+set linebreak               " Don't break words in the middle
+set nrformats-=octal        " Don't treat 007 as octal with <C-A>/<C-X>
+set formatoptions+=j        " Remove comment leader when joining lines
+
+" -- Search --------------------------------------------------------------------
+set incsearch               " Show match while typing
+set hlsearch                " Highlight all matches
+set ignorecase              " Case-insensitive search …
+set smartcase               " … unless the pattern has a capital letter
+
+" -- UI ------------------------------------------------------------------------
+set number relativenumber   " Hybrid line numbers (absolute current + relative)
+set title                   " Set terminal window title to filename
+set lazyredraw              " Don't redraw during macros (faster)
+set ttyfast                 " Assume a fast terminal connection
+set splitbelow splitright   " New splits open below and to the right
+if exists('+jumpoptions')
+    set jumpoptions=stack   " Jumplist as a stack: forward entries discarded on new jump
+endif
+set colorcolumn=100         " Ruler at 100 chars
+set laststatus=2            " Always show the status line
+set wildmenu                " Enhanced command-line completion
+set wildmode=longest:full,full
+if exists('+wildoptions')
+    set wildoptions=pum         " Wildmenu in a popup like the completion menu
+endif
+
+if has('popupwin')
+    set completeopt=menuone,popup,noselect
+else
+    set completeopt=menuone,preview,noselect
+endif
+
+if exists('+completefuzzymatch')
+    set completefuzzymatch=all  " Fuzzy-match native completion popup (mlce -> MyLongClassName)
+endif
+
+" -- Clipboard -----------------------------------------------------------------
+set clipboard+=unnamed      " Use the system clipboard for y/p
+
+" -- Whitespace display --------------------------------------------------------
+exec "set listchars=tab:\uA6\\ ,trail:\uAF,nbsp:~"
+set list                    " Always show invisibles
+
+" -- Wildcard ignores ----------------------------------------------------------
+set wildignore+=*.o,*.obj,*.pyc,*.exe,*.pdb,*.d
+
+" -- Persistent undo -----------------------------------------------------------
+if has('persistent_undo')
+    let s:undodir = expand('~/.vim/undodir')
+    if !isdirectory(s:undodir)
+        call mkdir(s:undodir, 'p')
+    endif
+    let &undodir = s:undodir
+    set undofile
+endif
+
+" -- Appearance ----------------------------------------------------------------
+set background=dark
+silent! colorscheme darkspectrum
+hi ColorColumn guibg=#272727 ctermbg=235
+
+"==============================================================================
+" [ 4. HELPER FUNCTIONS ]
+"==============================================================================
+
+" Walk up looking for compile_commands.json (in root or root/build).
+" Used when registering clangd so it picks up the right compilation database.
+" NOTE: s:find_project_root() is intentionally absent — vim-rooter already
+" lcd's to the project root, so getcwd() is always the project root.
+function! s:find_compile_commands_dir() abort
+    let l:dir = expand('%:p:h')
+    while l:dir !=# fnamemodify(l:dir, ':h')
+        if filereadable(l:dir . '/compile_commands.json')
+            return l:dir
+        elseif filereadable(l:dir . '/build/compile_commands.json')
+            return l:dir . '/build'
         endif
-    endif
+        let l:dir = fnamemodify(l:dir, ':h')
+    endwhile
+    return getcwd()
+endfunction
 
-    let g:isunix = 1
-    if has("win32") || has("win16")
-        let g:isunix = 0
-    endif
+"==============================================================================
+" [ 5. PLUGIN SETTINGS ]
+"==============================================================================
 
-"====[ Plug Plugins ]=============
-    let iCanHazPlugz=1
-    let plugsrc=expand('~/.vim/autoload/plug.vim')
+" -- vim-rooter ----------------------------------------------------------------
+let g:rooter_cd_cmd       = 'lcd'          " Keep chdir local to window/tab
+let g:rooter_patterns     = ['.git', 'CMakeLists.txt', 'Makefile', 'setup.py', '*.pro']
+let g:rooter_silent_chdir = 1              " No messages on chdir
 
-    if !filereadable(plugsrc)
-        let iCanHazPlugz=0
-        if g:isunix==1
-            silent !executable('curl') -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        else
-        endif
+" -- vim-cmake -----------------------------------------------------------------
+" :CMakeGenerate   — runs cmake in build/
+" :CMakeBuild      — runs cmake --build build/
+" :CMakeClean      — cleans the build dir
+let g:cmake_link_compile_commands = 1      " Symlink compile_commands.json to root
+let g:cmake_build_dir_location    = 'build'
 
-        if iCanHazPlugz==1
-            call PlugInstall
-        endif
-    endif
+" -- ALE (fixers + shellcheck only) -------------------------------------------
+" LSP (clangd / pyright / marksman) already handles linting for C, C++,
+" Python, and Markdown.  ALE's value here is exclusively:
+"   - shellcheck for shell scripts (bash-language-server is optional)
+"   - clang-format / black / isort as on-save code formatters
+" <leader>af runs :ALEFix manually when auto-fix is undesirable.
+let g:ale_linters = {
+    \ 'sh': ['shellcheck'],
+\ }
+let g:ale_fixers = {
+    \ 'c':      ['clang-format'],
+    \ 'cpp':    ['clang-format'],
+    \ 'python': ['black', 'isort'],
+    \ '*':      ['remove_trailing_lines', 'trim_whitespace'],
+\ }
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_save         = 1
+let g:ale_fix_on_save          = 1   " Run fixers automatically on save
+let g:ale_set_signs            = 1
+let g:ale_sign_error           = 'E>'
+let g:ale_sign_warning         = 'W>'
+let g:ale_disable_lsp          = 1   " Never compete with vim-lsp diagnostics
 
+nnoremap <leader>af :ALEFix<CR>
 
-    call plug#begin()
-    " Empower VIM
-    " Core Plugins
-        " Git plugin
-        Plug 'tpope/vim-fugitive'
+" -- asyncomplete --------------------------------------------------------------
+" FIX: The source must be explicitly registered — was missing in the original.
+augroup asyncomplete_setup_group
+    autocmd!
+    autocmd User asyncomplete_setup
+        \ call asyncomplete#register_source(
+        \     asyncomplete#sources#lsp#get_source_options({
+        \         'name': 'lsp',
+        \         'allowlist': ['*'],
+        \         'completor': function('asyncomplete#sources#lsp#completor'),
+        \     })
+        \ )
+augroup END
 
-        " Visualize the undo tree
-        Plug 'mbbill/undotree'
+" -- vim-lsp settings ----------------------------------------------------------
+let g:lsp_diagnostics_echo_cursor          = 1   " Show diagnostic under cursor in cmdline
+let g:lsp_diagnostics_virtual_text_enabled = 0   " No inline virtual text (noisy)
+let g:lsp_document_highlight_enabled       = 1   " Highlight references to symbol
+let g:lsp_signature_help_enabled           = 1   " Show function signature while typing
+let g:lsp_hover_ui = has('popupwin') ? 'popup' : 'preview'
 
-        " Pretty colours
-        Plug 'vim-scripts/darkspectrum'
+"==============================================================================
+" [ 6. LSP SERVER REGISTRATION ]
+"==============================================================================
+" Servers are registered lazily via the lsp_setup User event.
+" Add new servers here — the pattern is: check executable ? register.
 
-        " Awesome search
-        Plug 'kien/ctrlp.vim'
+augroup lsp_server_setup
+    autocmd!
+    autocmd User lsp_setup call s:register_lsp_servers()
+augroup END
 
-        " Fix Whitespaces
-        Plug 'bronson/vim-trailing-whitespace'
+function! s:register_lsp_servers() abort
 
-        " Better CtrlP stuff
-        Plug 'tacahiroy/ctrlp-funky'
-
-        " Visualize Marks
-        Plug 'kshenoy/vim-signature'
-
-        " Vim File Manager
-        Plug 'tpope/vim-vinegar'
-
-        " Fancy Startpage, to easily reach for deep files.
-        Plug 'mhinz/vim-startify'
-
-        " Easy tabs completions
-        Plug 'ervandew/supertab'
-
-        " Better TagBar
-        Plug 'majutsushi/tagbar'
-
-        " Fixme list
-        Plug 'vim-scripts/TaskList.vim'
-
-        " Markdown Writing
-        Plug 'gabrielelana/vim-markdown'
-
-    " Bloat for other addons
-        Plug 'tomtom/tlib_vim'
-        Plug 'MarcWeber/vim-addon-mw-utils'
-        Plug 'xolox/vim-misc'
-        Plug 'roxma/nvim-yarp'
-
-    " Language Specific
-        " LSP Support
-        Plug 'prabirshrestha/vim-lsp'
-
-        " Snort Support
-        Plug 'sploit/snort-vim'
-
-        " Python Support
-        Plug 'davidhalter/jedi-vim'
-
-    call plug#end()
-    let g:deoplete#enable_at_startup = 1 " Auto Complete
-    filetype plugin indent on
-
-    if v:version > 799
-        packadd termdebug   " Terminal Debugger
-    endif
-
-"====[ Generic Source Code Editing ]====================
-
-    " Auto Change to the directory of the edited file.
-    autocmd BufEnter * silent! lcd %:p:h
-    " With a map leader it's possible to do extra key combinations
-    " like <leader>w saves the current file
-    let mapleader = "\<Space>"
-    let g:mapleader = "\<Space>"
-
-    set clipboard+=unnamed            " Sane default
-    set expandtab                     " Spaces instead of tabs
-    set title                         " Keep our terminals sane
-    set autoread                      " Auto read changed files, I can handle it
-    set hidden                        " Unsaved background buffers can be undo'd
-    set hlsearch                      " Hilight search
-    set incsearch                     " Increase Search
-    set linebreak                     " No word breaking
-    set mouse=a                       " Enable Mouse-Support
-    set number                        " Show number -- Hybrid mode
-    set relativenumber                " Show Relative numbers
-    set shiftwidth=4                  " Assume tab with of 4
-    set tabstop=4                     " Assume tab with of 4
-    set nofoldenable                  " We hate folding
-    set directory^=$HOME/.vim/tmp/    " Dont make a mess out of my filesystem
-    set complete=.,w,b,u,t,i          " Vim can help me being less dyslectic
-
-    set background=dark               " Dark Background
-
-    syntax on
-    color darkspectrum                " Pretty Colours
-    " color darkblue                " Pretty Colours
-
-"====[ Language Servers ]=======
+    " -- clangd (C / C++ / Objective-C) ---------------------------------------
+    " clangd drives everything: completions, diagnostics, clang-tidy, inlay hints.
+    " compile_commands.json must exist (cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1).
     if executable('clangd')
-        au User lsp_setup call lsp#register_server({
-                    \ 'name': 'clangd',
-                    \ 'cmd': {server_info->['clangd']},
-                    \ 'alloclist': ['cpp', 'cc', 'h'],
-                    \})
-    endif
-    function! s:on_lsp_buffer_enabled() abort
-        setlocal omnifunc=lsp#complete
-        setlocal signcolumn=yes
-        if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-        let g:lsp_format_sync_timeout = 1000
-        autocmd! BufWritePre *.cpp,*.cc,*.h call execute('LspDocumentFormatSync')
-    endfunction
-    augroup lsp_install
-        au!
-        autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-    augroup END
-
-"====[ WildIgnore. ]============
-    set wildignore =.*                " Ignore dot files
-    set wildignore+=*.o,*.obj,*.pyc   " Ignore objects
-    set wildignore+=.git,.hg.svn      " Ignore repos
-    set wildignore+=*.png,*.jpg,*.gif " We don't need images in vim.
-
-"====[ Make the status line do something useful. ]====================
-
-    set statusline=%t\                              "tail of the filename
-    " set statusline+=\ %{LinterStatus()}           "Syntax Error
-    set statusline+=\ \ %{FugitiveHead(5)}\              "Show the current git branch
-    set statusline+=%{IsPasteMode()}                "show pastemode state
-
-    if v:version < 800                               "Warn me when I use old stuff
-       set statusline+=[Outdated\ :\ 
-       set statusline+=%{v:version}
-       set statusline+=\ ]
+        call lsp#register_server({
+            \ 'name': 'clangd',
+            \ 'cmd': {server_info -> [
+            \     'clangd',
+            \     '--background-index',
+            \     '--clang-tidy',
+            \     '--all-scopes-completion',
+            \     '--completion-style=detailed',
+            \     '--header-insertion=iwyu',
+            \     '--compile-commands-dir=' . s:find_compile_commands_dir(),
+            \ ]},
+            \ 'allowlist': ['c', 'cpp', 'cc', 'objc', 'objcpp'],
+        \ })
     endif
 
-    if !has('python3') || !has('terminal') || !has('job')
-       set statusline+=[Not\ Found\ :\ "
-       if !has('python3')
-           set statusline+=Python\ 3\ "
-       endif
-       if !has('terminal')
-           set statusline+=Terminal\ "
-       endif
-       if !has('job')
-           set statusline+=Job\ "
-       endif
-       set statusline+=]
-
+    " -- pyright (Python) ------------------------------------------------------
+    " Install: npm install -g pyright
+    " Handles type checking, completions, go-to-definition.
+    if executable('pyright-langserver')
+        call lsp#register_server({
+            \ 'name': 'pyright',
+            \ 'cmd': {server_info -> ['pyright-langserver', '--stdio']},
+            \ 'allowlist': ['python'],
+        \ })
     endif
 
-    set statusline+=%=                              "left/right separator
-
-
-    set statusline+=[Line:%l/%L\ |                  "cursor line/total lines
-    set statusline+=Col:%c]\                        "cursor column
-
-    set statusline+=<%H                             "help file flag
-    set statusline+=%M                              "modified flag
-    set statusline+=%R>\                            "read only flag
-
-    set statusline+=[%{strlen(&fenc)?&fenc:'none'}, "file encoding
-    set statusline+=%{&ff}]                         "file format
-    set statusline+=%y                              "filetype
-    set laststatus=2
-
-"====[ Startify ]================
-     let g:startify_session_dir = '~/.vim/session'
-
-"====[ Make the 81st column of wide lines stand out.. ]====================
-    let colorcolumn=150
-    hi ColorColumn guibg=#272727 ctermbg=0
-
-"====[ Less Aggressive spell checking ]====================
-     highlight clear SpellBad
-     highlight SpellBad cterm=underline ctermfg=red
-     highlight SpellBad gui=undercurl,bold
-
-"====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
-    exec "set listchars=tab:\uA6\\ ,trail:\uAF,nbsp:~"
-    set list
-
-"====[ Todo list ]====
-    let g:tlTokenList = ['Todo', 'TODO', 'FixMe']
-    let g:tlWindowPosition = 1
-    map <F12> <Plug>TaskList
-
-"====[ Swap v and CTRL-V, because Block mode is more useful that Visual mode " ]=
-    nnoremap    v   <C-V>
-    nnoremap <C-V>     v
-
-    vnoremap    v   <C-V>
-    vnoremap <C-V>     v
-
-"====[ Open any file with a pre-existing swapfile in readonly mode "]=========
-    augroup NoSimultaneousEdits
-        autocmd!
-        autocmd SwapExists * let v:swapchoice = 'o'
-        autocmd SwapExists * echo 'Duplicate edit session (readonly)'
-        autocmd SwapExists * echohl None
-        autocmd SwapExists * sleep 1
-    augroup END
-
-"====[ Ctrl-P ]====
-    nnoremap <Leader>fu :CtrlPFunky<Cr>
-    let g:ctrlp_cmd = 'CtrlPMixed'
-    let g:ctrlp_funky_syntax_highlight = 1
-
-    "The Silver Searcher
-    if executable('ag')
-        " Use ag over grep
-        set grepprg=ag\ --nogroup\ --nocolor
-
-        " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-        let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-        " ag is fast enough that CtrlP doesn't need to cache
-        let g:ctrlp_use_caching = 0
+    " -- bash-language-server (shell scripts) ----------------------------------
+    " Install: npm install -g bash-language-server
+    if executable('bash-language-server')
+        call lsp#register_server({
+            \ 'name': 'bash-language-server',
+            \ 'cmd': {server_info -> ['bash-language-server', 'start']},
+            \ 'allowlist': ['sh', 'bash'],
+        \ })
     endif
 
-"====[ TagList ]=====
-    let g:tagbar_ctags_bin=executable('ctags')
-    " let Tlist_Ctags_Cmd='/usr/bin/ctags'
-    " let Tlist_GainFocus_On_ToggleOpen = 1
-    " let Tlist_Close_On_Select = 1
-    " let Tlist_Use_Right_Window = 1
-    " let Tlist_File_Fold_Auto_Close = 1
-    " " ToDo: Something like :TlistAddFilesRecursive {directory} [ {pattern} ]
-    nmap <F7> :TagbarToggle<CR>
-
-"====[ Spell Checking ]===
-
-    let b:myLang=0
-    let g:myLangList=["nospell", "en_US", "nl"]
-    function! ToggleSpell()
-        if !exists(b:myLang)
-          let b:myLang=0
-        endif
-        let b:myLang=b:myLang+1
-        if b:myLang>=len(g:myLangList)
-            let b:myLang=0
-        endif
-
-        if b:myLang==0
-            setlocal nospell
-        else
-            "execute "setlocal spell spelllang=".get(g:myLangList, b:myLang)
-            execute "set spelllang=".get(g:myLangList, b:myLang)
-        endif
-        echo "spell checking language:" g:myLangList[b:myLang]
-    endfunction
-
-    map <leader>st :call ToggleSpell()<CR>
-    map <leader>sn ]s
-    map <leader>sp [s
-    map <leader>sa zg
-    map <leader>s? z=
-
-"===[ GUI stuff ]===
-
-    if has('gui_running')
-        " Remove bloat
-        " Todo; remove items from menu
-        set mousemodel=popup " Allow Modern mouse usage.
-        set guioptions+=m  " Use menubar
-        " set guioptions+=c  " Remove pop-ups and use console like stuff
-        set guioptions-=T  " Remove Toolbar
-        set guioptions-=r  " Remove right-scrollbar
-        set guioptions-=L  " Remove left-scrollbar
-
-        " let font_choice_one = DejaVu\ Sans\ Mono\ 10
-        " let font_choice_two = Hack\ Regular\ 10
-        " " Maybe add Gohu?
-        set guifont=Hack\ Regular\ 10
-        " set guifont=Hack:h12:cANSI:qDRAFT
-
-        let s:pattern = '^\(.* \)\([1-9][0-9]*\)$'
-        let s:minfontsize = 6
-        let s:maxfontsize = 64
-        function! AdjustFontSize(amount)
-            let fontname = substitute(&guifont, s:pattern, '\1', '')
-            let cursize = substitute(&guifont, s:pattern, '\2', '')
-            let newsize = cursize + a:amount
-            if (newsize >= s:minfontsize) && (newsize <= s:maxfontsize)
-                let newfont = fontname . newsize
-                let &guifont = newfont
-            endif
-        endfunction
-
-        function! LargerFont()
-          call AdjustFontSize(1)
-        endfunction
-        command! LargerFont call LargerFont()
-
-        function! SmallerFont()
-            call AdjustFontSize(-1)
-        endfunction
-        command! SmallerFont call SmallerFont()
-
-        map <S-Up> :LargerFont<cr>
-        map <S-Down> :SmallerFont<cr>
-        " Todo; add scoll wheel support.
-
+    " -- marksman (Markdown — research reports) --------------------------------
+    " Install: https://github.com/artempyanykh/marksman/releases
+    if executable('marksman')
+        call lsp#register_server({
+            \ 'name': 'marksman',
+            \ 'cmd': {server_info -> ['marksman', 'server']},
+            \ 'allowlist': ['markdown'],
+        \ })
     endif
 
-"====[ Compile YCM ]====
-    function! CompileYouCompleteMe()
-        !~/.vim/plugged/YouCompleteMe/install.py --clang-completer
-    endfunction
-
-"====[ Undo Tree ]===
-    if has('persistent_undo')
-        silent !mkdir -p ~/.vim/undodir/
-        set undodir="~/.vim/undodir/"
-    endif
-    nnoremap <F5> :UndotreeToggle<cr>
-    " Todo; test this again.
-
-"====[ File Type Settings ]===
-
-    " This is what PEP8 wants.
-    autocmd Filetype python set smartindent tabstop=4 shiftwidth=4 expandtab
-
-    " This is for the C-Things..
-    autocmd Filetype c   set smartindent tabstop=4 shiftwidth=4 expandtab
-    autocmd Filetype cpp set smartindent tabstop=4 shiftwidth=4 expandtab
-    autocmd Filetype asm set smartindent tabstop=4 shiftwidth=4 expandtab
-    autocmd Filetype s   set smartindent tabstop=4 shiftwidth=4 expandtab
-
-    " Tex friendly
-    autocmd Filetype tex set tabstop=2 softtabstop=2 shiftwidth=2 expandtab shiftround smarttab  spell spelllang=en_gb
-    "autocmd FileType tex setlocal foldmethod=expr foldexpr=getline(v:lnum)=~'^\s*%'
-
-    " Research
-    au! BufRead,BufNewFile *.markdown set filetype=mkd
-    au! BufRead,BufNewFile *.md       set filetype=mkd syntax=markdown colorcolumn=125
-    au! BufRead,BufNewFile *.snort    set syntax=hog
-    autocmd Filetype md set tabstop=4 softtabstop=4 shiftwidth=3 shiftround smarttab spell spelllang=en_gb noshowmode noshowcmd scrolloff=999
-
-"====[ Remaps ]===
-    " Really annoying Ex-mode
-    nnoremap Q <nop>
-
-    " sudo Write
-    cmap w!! %!sudo tee > /dev/null %
-
-    " Easy paste
-    if has("gui_running")
-        map  <silent>  <S-Insert>  "+p
-        imap <silent>  <S-Insert>  <Esc>"+pa
+    " -- qmlls (QML — Qt 6) ---------------------------------------------------
+    " Ships with Qt 6.2+: <Qt install>/bin/qmlls
+    " Also available standalone: pip install qmlls (experimental)
+    if executable('qmlls')
+        call lsp#register_server({
+            \ 'name': 'qmlls',
+            \ 'cmd': {server_info -> ['qmlls']},
+            \ 'allowlist': ['qml'],
+        \ })
     endif
 
-"===[ Custom Functions ]===
+endfunction
 
-    function! IsPasteMode()
-        if &paste
-            return '[PASTE MODE]'
-        endif
+" -- LSP buffer keybindings ----------------------------------------------------
+" Called whenever an LSP is activated for the current buffer.
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+
+    " Navigation
+    nmap <buffer> gd          <plug>(lsp-definition)
+    nmap <buffer> gD          <plug>(lsp-declaration)
+    nmap <buffer> gy          <plug>(lsp-type-definition)
+    nmap <buffer> gi          <plug>(lsp-implementation)
+    nmap <buffer> gr          <plug>(lsp-references)
+    nmap <buffer> K           <plug>(lsp-hover)
+
+    " Refactoring
+    nmap <buffer> <leader>rn  <plug>(lsp-rename)
+    nmap <buffer> <leader>ca  <plug>(lsp-code-action)
+    nmap <buffer> <leader>qf  <plug>(lsp-document-diagnostics)
+
+    " Diagnostics navigation
+    nmap <buffer> ]g          <plug>(lsp-next-diagnostic)
+    nmap <buffer> [g          <plug>(lsp-previous-diagnostic)
+
+    " Format current buffer via LSP (clang-format / black etc.)
+    nmap <buffer> <leader>lf  <plug>(lsp-document-format)
+endfunction
+
+augroup lsp_buffer_enable
+    autocmd!
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+" -- Completion menu keybindings -----------------------------------------------
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <CR>    pumvisible() ? asyncomplete#close_popup() : "\<CR>"
+
+"==============================================================================
+" [ 7. STATUS LINE ]
+"==============================================================================
+" Custom lightweight statusline with LSP diagnostics, Git branch, paste mode.
+" No external plugin needed — pure built-in.
+"
+" Layout:
+"   LEFT:  filename  [git-branch]  [PASTE]  LSP:E2 W1
+"   RIGHT: filetype  [line/total, col]  percentage
+
+" Helper: show paste mode indicator
+function! StatusPasteMode() abort
+    return &paste ? ' [PASTE]' : ''
+endfunction
+
+" Helper: show LSP error/warning counts for the current buffer.
+" Returns empty string if vim-lsp is not loaded or no diagnostics.
+function! StatusLspDiagnostics() abort
+    if !exists('*lsp#get_buffer_diagnostics_counts')
         return ''
+    endif
+    let l:counts = lsp#get_buffer_diagnostics_counts()
+    if empty(l:counts)
+        return ''
+    endif
+    let l:e = get(l:counts, 'error',   0)
+    let l:w = get(l:counts, 'warning', 0)
+    if l:e == 0 && l:w == 0
+        return ' [OK]'
+    endif
+    let l:out = ' LSP:'
+    if l:e > 0 | let l:out .= ' E' . l:e | endif
+    if l:w > 0 | let l:out .= ' W' . l:w | endif
+    return l:out
+endfunction
+
+" Helper: show LSP server name(s) active for this buffer.
+function! StatusLspServer() abort
+    if !exists('*lsp#get_server_status')
+        return ''
+    endif
+    " Collect names of running servers for this buffer's filetype.
+    let l:servers = lsp#get_allowed_servers()
+    let l:running = []
+    for l:s in l:servers
+        if lsp#get_server_status(l:s) ==# 'running'
+            call add(l:running, l:s)
+        endif
+    endfor
+    return empty(l:running) ? '' : ' [' . join(l:running, ',') . ']'
+endfunction
+
+" Helper: show current/total match count for the active search.
+function! StatusSearch() abort
+    if !v:hlsearch | return '' | endif
+    let l:c = searchcount({'maxcount': 999, 'timeout': 20})
+    if empty(l:c) || l:c.incomplete | return '' | endif
+    return ' [' . l:c.current . '/' . l:c.total . ']'
+endfunction
+
+" Build the statusline.
+" %t   = tail of filename (basename)
+" %m   = modified flag
+" %r   = readonly flag
+" %h   = help buffer flag
+" %=   = separator (switch to right side)
+" %y   = filetype
+" %l   = current line, %L = total lines, %c = column
+" %P   = percentage through file
+set statusline=
+set statusline+=\ %t                            " Filename
+set statusline+=%m%r%h                          " Modified / Readonly / Help flags
+set statusline+=\ [%{FugitiveHead()}]           " Git branch
+set statusline+=%{StatusPasteMode()}            " [PASTE] when paste is on
+set statusline+=%{StatusLspDiagnostics()}       " LSP error/warning counts
+set statusline+=%{StatusLspServer()}            " Active LSP server name(s)
+set statusline+=%{StatusSearch()}               " Search match [current/total]
+set statusline+=%=                              " -- right side --
+set statusline+=%y                              " [filetype]
+set statusline+=\ [%l/%L,\ %c]                 " [current/total, col]
+set statusline+=\ %P\                           " percentage
+
+" Per-window title bar: filename + modified flag + git branch on the right.
+" Suppressed for special buffers (quickfix, help, terminal, nofile scratch).
+if exists('+winbar')
+    augroup winbar_setup
+        autocmd!
+        autocmd BufEnter,BufWinEnter * call s:SetWinbar()
+    augroup END
+
+    function! s:SetWinbar() abort
+        if &buftype !=# ''
+            setlocal winbar=
+        else
+            setlocal winbar=%t\ %m%r\ %=%{FugitiveHead()}
+        endif
+    endfunction
+endif
+
+" Refresh diagnostics in the statusline when vim-lsp updates them.
+augroup lsp_statusline_refresh
+    autocmd!
+    autocmd User lsp_diagnostics_updated redrawstatus
+augroup END
+
+"==============================================================================
+" [ 8. DEBUGGING ]
+"==============================================================================
+" Uses Vim's built-in termdebug pack (GDB/LLDB/CDB bridge).
+" No external plugins needed — `packadd termdebug` is enough.
+
+if v:version >= 800 && has('terminal')
+    packadd termdebug
+
+    " -- Debugger selection ----------------------------------------------------
+    if g:is_windows
+        " Windows kernel/user-mode debugging with CDB (WinDbg command-line)
+        let g:termdebugger = 'cdb'
+    elseif executable('lldb')
+        " FreeBSD / LLVM-native
+        let g:termdebugger = 'lldb'
+    elseif executable('gdb')
+        let g:termdebugger = 'gdb'
+    endif
+
+    " Make termdebug use a vertical split (easier on wide monitors)
+    let g:termdebug_wide = 1
+
+    " -- Debug keybindings -----------------------------------------------------
+    nnoremap <F6>        :Debug<CR>
+    nnoremap <F8>        :Over<CR>
+    nnoremap <F9>        :Step<CR>
+    nnoremap <leader>br  :Break<CR>
+    nnoremap <leader>bc  :Clear<CR>
+    nnoremap <leader>de  :Evaluate<CR>
+    nnoremap <leader>dc  :Continue<CR>
+    nnoremap <leader>df  :Finish<CR>
+endif
+
+"==============================================================================
+" [ 9. BUILD SYSTEM (Make / CMake) ]
+"==============================================================================
+" :make and <leader>m both go through makeprg, which is set automatically
+" whenever vim-rooter lcd's to a new project root (DirChanged event).
+"
+" Detection order:
+"   build/CMakeCache.txt  -> cmake --build build (generator-agnostic: Ninja,
+"                            Makefiles, MSBuild all work)
+"   Makefile present      -> make (plain)
+"   fallback              -> make
+"
+" This means bare :make always does the right thing without flags.
+
+function! s:UpdateMakePrg() abort
+    let l:root = getcwd()
+    if filereadable(l:root . '/build/CMakeCache.txt')
+        " cmake --build is generator-agnostic (Ninja, Makefiles, MSBuild).
+        let &makeprg = 'cmake --build ' . shellescape(l:root . '/build', 1)
+    elseif filereadable(l:root . '/Makefile')
+        let &makeprg = 'make'
+    else
+        let &makeprg = 'make'
+    endif
+endfunction
+
+" Fire on every vim-rooter lcd and on startup.
+augroup smart_makeprg
+    autocmd!
+    autocmd DirChanged * call s:UpdateMakePrg()
+    autocmd VimEnter   * call s:UpdateMakePrg()
+augroup END
+
+" Quickfix navigation — compile errors go here.
+nnoremap <leader>m  :make<CR>
+nnoremap <leader>mj :make --target
+nnoremap <leader>cn :cnext<CR>
+nnoremap <leader>cp :cprev<CR>
+nnoremap <leader>co :copen<CR>
+nnoremap <leader>cc :cclose<CR>
+
+" cmake-specific shortcuts (see vim-cmake docs)
+nnoremap <leader>cg :CMakeGenerate<CR>
+nnoremap <leader>cb :CMakeBuild<CR>
+
+"==============================================================================
+" [ 10. CTAGS & CSCOPE (LCD-Aware) ]
+"==============================================================================
+" Because vim-rooter uses `lcd`, we must walk up to find tag/cscope files.
+" The trailing `;` in `set tags` tells Vim to do the same walk itself.
+
+" -- ctags ---------------------------------------------------------------------
+if executable('ctags')
+    " Run ctags from the project root, exclude noise dirs.
+    command! MakeTags
+        \ silent! execute '!ctags -R'
+        \   . ' --exclude=.git --exclude=build --exclude=node_modules'
+        \   . ' ' . getcwd()
+        \ | redraw!
+
+    " Walk up the directory tree for tags files (the `;` suffix is the magic).
+    set tags=./tags;,tags;
+
+    " <C-]>  ? go to definition (show list if ambiguous with g<C-]>)
+    " <C-[>  ? go back (same as <C-T>; <C-[> === <Esc> in some terms, be careful)
+    nnoremap <C-]>      g<C-]>
+    nnoremap <leader>ct :MakeTags<CR>
+endif
+
+" -- cscope --------------------------------------------------------------------
+" cscope is powerful for large C codebases (Linux kernel, LLVM, BSD).
+if has('cscope') && executable('cscope')
+    set cscopetag       " Use cscope for tag-jumps
+    set csto=0          " Check cscope before ctags
+
+    " Load the nearest cscope.out walking up from the current file.
+    function! s:load_cscope() abort
+        let l:db = findfile('cscope.out', '.;')
+        if !empty(l:db) && filereadable(l:db)
+            " Avoid re-adding the same database.
+            try
+                silent execute 'cscope add ' . l:db . ' ' . fnamemodify(l:db, ':h')
+            catch
+            endtry
+        endif
     endfunction
 
+    augroup cscope_load
+        autocmd!
+        autocmd BufEnter *.c,*.cpp,*.h,*.hpp call s:load_cscope()
+    augroup END
 
-"====[ From VIM-Sensible ]====
-    set nrformats-=octal
+    " Build / rebuild cscope database from project root.
+    nnoremap <leader>cs :silent! execute '!cscope -Rbq -s ' . getcwd()
+        \ <bar> cscope reset <bar> redraw!<CR>
 
-    if &encoding ==# 'latin1' && has('gui_running')
-        set encoding=utf-8
+    " Query shortcuts — all use the word under the cursor.
+    nnoremap <leader>cf :cscope find s <C-R>=expand('<cword>')<CR><CR>
+    nnoremap <leader>cG :cscope find g <C-R>=expand('<cword>')<CR><CR>
+    nnoremap <leader>cd :cscope find d <C-R>=expand('<cword>')<CR><CR>
+    nnoremap <leader>ci :cscope find i <C-R>=expand('<cword>')<CR><CR>
+endif
+
+"==============================================================================
+" [ 11. FILETYPE OVERRIDES ]
+"==============================================================================
+augroup filetype_configs
+    autocmd!
+
+    " -- C / C++ ---------------------------------------------------------------
+    " Kernel style: 8-space hard tabs.  Override per-project in .vimrc.local.
+    autocmd FileType c,cpp,cc
+        \ setlocal tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab
+
+    " -- Python (exploit dev, scripting) ---------------------------------------
+    autocmd FileType python
+        \ setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+
+    " -- Markdown (research reports) -------------------------------------------
+    autocmd FileType markdown,mkd
+        \ setlocal spell spelllang=en_US colorcolumn=80 wrap
+
+    " -- LLVM IR ---------------------------------------------------------------
+    autocmd BufRead,BufNewFile *.ll   set filetype=llvm
+
+    " -- Snort / Suricata rules ------------------------------------------------
+    autocmd BufRead,BufNewFile *.snort set syntax=hog
+
+    " -- CMakeLists ------------------------------------------------------------
+    autocmd BufRead,BufNewFile CMakeLists.txt set filetype=cmake
+
+    " -- QML (Qt Markup Language) ----------------------------------------------
+    " Qt convention: 4-space indent, 80-col limit.
+    autocmd FileType qml
+        \ setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab colorcolumn=80
+
+    " -- Qt resource / designer files (XML-based) ------------------------------
+    autocmd BufRead,BufNewFile *.qrc,*.ui set filetype=xml
+    autocmd BufRead,BufNewFile *.pro,*.pri set filetype=make
+augroup END
+
+"==============================================================================
+" [ 12. KEYBINDINGS ]
+"==============================================================================
+
+" -- Window navigation ---------------------------------------------------------
+" <C-hjkl> to move between splits without needing <C-w> first.
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" -- FZF fuzzy search ----------------------------------------------------------
+nnoremap <leader>ff :Files<CR>
+nnoremap <leader>fb :Buffers<CR>
+nnoremap <leader>fg :Rg<CR>
+nnoremap <leader>ft :Tags<CR>
+nnoremap <leader>fh :History<CR>
+
+" -- Plugin toggles ------------------------------------------------------------
+nnoremap <F5>  :UndotreeToggle<CR>
+nnoremap <F7>  :TagbarToggle<CR>
+nnoremap <F12> <Plug>TaskList
+
+" -- Disable Ex mode (it trips people up constantly) ---------------------------
+nnoremap Q <nop>
+
+" -- Save as root --------------------------------------------------------------
+" FIX: original had `%!sudo tee > /dev/null %` which redirects before the
+" filename, so tee gets no input.  Correct form below sends buffer to tee.
+cnoremap w!! w !sudo tee % > /dev/null
+
+" -- Clear search highlight ----------------------------------------------------
+nnoremap <leader><space> :nohlsearch<CR>
+
+" -- Spell toggle (cycles: off ? en_US ? nl) ----------------------------------
+let g:my_lang_list = ['nospell', 'en_US', 'nl']
+let b:my_lang = 0
+
+function! ToggleSpell() abort
+    " b:my_lang may be undefined in a fresh buffer
+    if !exists('b:my_lang') | let b:my_lang = 0 | endif
+    let b:my_lang = (b:my_lang + 1) % len(g:my_lang_list)
+    let l:lang = g:my_lang_list[b:my_lang]
+    if l:lang ==# 'nospell'
+        setlocal nospell
+    else
+        execute 'setlocal spell spelllang=' . l:lang
+    endif
+    echo 'Spelllang: ' . l:lang
+endfunction
+
+nnoremap <leader>ss :call ToggleSpell()<CR>
+
+" Custom spell error appearance (underline + red, no distracting background)
+highlight clear SpellBad
+highlight SpellBad cterm=underline ctermfg=red gui=undercurl,bold
+
+" -- Visual block swap ---------------------------------------------------------
+" NOTE: This remapping is intentionally kept but documented as opinionated.
+" It makes `v` behave as block-select and `<C-V>` as character-select.
+" Comment these 4 lines out if it causes confusion with plugins.
+nnoremap v     <C-V>
+nnoremap <C-V> v
+vnoremap v     <C-V>
+vnoremap <C-V> v
+
+"==============================================================================
+" [ 13. CLAUDE CLI INTEGRATION ]
+"==============================================================================
+" Requires: `claude` CLI installed and authenticated (`claude auth login`).
+"
+" Keybindings (visual or normal mode):
+"   <leader>Ce  -- explain selected code / current file
+"   <leader>Ca  -- security audit: vulns, attack surface, dangerous patterns
+"   <leader>Cr  -- code review: bugs, logic errors, style
+"   <leader>Cs  -- summarise what the code does (quick triage)
+"
+" Output opens in a scratch window. Close with q.
+" Uses `claude -p` (print / non-interactive) via job_start() -- async, won't block Vim.
+
+if executable('claude')
+    function! s:ClaudeShowResult(lines, tmpfile) abort
+        call delete(a:tmpfile)
+        botright new
+        setlocal buftype=nofile bufhidden=wipe noswapfile filetype=markdown
+        call setline(1, a:lines)
+        nnoremap <buffer> q :q<CR>
+    endfunction
+
+    function! s:ClaudeQuery(prompt, lnum1, lnum2) abort
+        let l:lines   = getline(a:lnum1, a:lnum2)
+        let l:code    = join(l:lines, "\n")
+        let l:full    = a:prompt . "\n\n```\n" . l:code . "\n```"
+        let l:tmpfile = tempname()
+        call writefile([l:full], l:tmpfile)
+
+        if !has('job')
+            " Fallback: synchronous (Vim < 8 or no job support).
+            let l:out = systemlist('claude -p', l:full)
+            call s:ClaudeShowResult(l:out, l:tmpfile)
+            return
+        endif
+
+        let l:out = []
+        call job_start('claude -p', {
+            \ 'in_io':   'file',
+            \ 'in_name':  l:tmpfile,
+            \ 'out_cb':  {_, line -> add(l:out, line)},
+            \ 'exit_cb': {_, _ -> s:ClaudeShowResult(l:out, l:tmpfile)},
+            \ })
+        echomsg '[Claude] running...'
+    endfunction
+
+    command! -range ClaudeExplain
+        \ call s:ClaudeQuery('Explain this code concisely. Note any non-obvious behaviour.', <line1>, <line2>)
+    command! -range ClaudeAudit
+        \ call s:ClaudeQuery('Security audit. List: vulnerabilities (CWE if applicable), dangerous patterns, attack surface, unsafe API usage.', <line1>, <line2>)
+    command! -range ClaudeReview
+        \ call s:ClaudeQuery('Code review. List: bugs, logic errors, resource leaks, undefined behaviour, and style issues.', <line1>, <line2>)
+    command! -range ClaudeSummarise
+        \ call s:ClaudeQuery('Summarise in 3-5 sentences what this code does. Be terse.', <line1>, <line2>)
+
+    " Normal mode: operate on whole file.
+    nnoremap <leader>Ce :%ClaudeExplain<CR>
+    nnoremap <leader>Ca :%ClaudeAudit<CR>
+    nnoremap <leader>Cr :%ClaudeReview<CR>
+    nnoremap <leader>Cs :%ClaudeSummarise<CR>
+
+    " Visual mode: operate on selection.
+    vnoremap <leader>Ce :ClaudeExplain<CR>
+    vnoremap <leader>Ca :ClaudeAudit<CR>
+    vnoremap <leader>Cr :ClaudeReview<CR>
+    vnoremap <leader>Cs :ClaudeSummarise<CR>
+endif
+
+"==============================================================================
+" [ 14. GUI SETTINGS ]
+"==============================================================================
+if has('gui_running')
+    set mousemodel=popup        " Right-click gives a popup menu
+    set guioptions+=m           " Menu bar
+    set guioptions-=T           " No toolbar
+    set guioptions-=r           " No right scrollbar
+    set guioptions-=L           " No left scrollbar
+    for s:font in ['Hack:h12:cANSI:qDRAFT', 'Consolas:h12:cANSI', 'Courier_New:h12:cANSI']
+        try
+            exec 'set guifont=' . escape(s:font, ' ')
+            break
+        catch
+        endtry
+    endfor
+
+    " -- Font size adjustment --------------------------------------------------
+    function! s:AdjustFontSize(amount) abort
+        let l:pat  = '^\(.* \)\([1-9][0-9]*\)$'
+        let l:name = substitute(&guifont, l:pat, '\1', '')
+        let l:size = substitute(&guifont, l:pat, '\2', '') + a:amount
+        if l:size >= 6 && l:size <= 64
+            let &guifont = l:name . l:size
+        endif
+    endfunction
+
+    nnoremap <S-Up>   :call <SID>AdjustFontSize(1)<CR>
+    nnoremap <S-Down> :call <SID>AdjustFontSize(-1)<CR>
+
+    " Paste from system clipboard in GUI
+    map  <silent> <S-Insert> "+p
+    imap <silent> <S-Insert> <Esc>"+pa
+
+    " -- Search menu (FZF) -------------------------------------------------------
+    amenu Search.Files          :Files<CR>
+    amenu Search.Buffers        :Buffers<CR>
+    amenu Search.Ripgrep        :Rg<CR>
+    amenu Search.Tags           :Tags<CR>
+    amenu Search.History        :History<CR>
+
+    " -- LSP menu ----------------------------------------------------------------
+    nnoremenu LSP.Go\ to\ Definition      <Plug>(lsp-definition)
+    nnoremenu LSP.Go\ to\ Declaration     <Plug>(lsp-declaration)
+    nnoremenu LSP.Type\ Definition        <Plug>(lsp-type-definition)
+    nnoremenu LSP.Find\ References        <Plug>(lsp-references)
+    nnoremenu LSP.Hover                   <Plug>(lsp-hover)
+    nnoremenu LSP.-Sep1-                  <Nop>
+    nnoremenu LSP.Rename                  <Plug>(lsp-rename)
+    nnoremenu LSP.Code\ Action            <Plug>(lsp-code-action)
+    nnoremenu LSP.Format\ Buffer          <Plug>(lsp-document-format)
+    nnoremenu LSP.Diagnostics             <Plug>(lsp-document-diagnostics)
+
+    " -- Build menu --------------------------------------------------------------
+    amenu Build.Make                      :make<CR>
+    amenu Build.-Sep1-                    <Nop>
+    amenu Build.CMake\ Generate           :CMakeGenerate<CR>
+    amenu Build.CMake\ Build              :CMakeBuild<CR>
+    amenu Build.-Sep2-                    <Nop>
+    amenu Build.Next\ Error<Tab>cn        :cnext<CR>
+    amenu Build.Prev\ Error<Tab>cp        :cprev<CR>
+    amenu Build.Open\ Quickfix<Tab>co     :copen<CR>
+    amenu Build.Close\ Quickfix<Tab>cc    :cclose<CR>
+
+    " -- Debug menu (termdebug) --------------------------------------------------
+    if v:version >= 800 && has('terminal')
+        amenu Debug.Start<Tab>F6                  :Debug<CR>
+        amenu Debug.Step\ Over<Tab>F8             :Over<CR>
+        amenu Debug.Step\ Into<Tab>F9             :Step<CR>
+        amenu Debug.Continue                      :Continue<CR>
+        amenu Debug.Finish                        :Finish<CR>
+        amenu Debug.-Sep-                         <Nop>
+        amenu Debug.Set\ Breakpoint               :Break<CR>
+        amenu Debug.Clear\ Breakpoint             :Clear<CR>
+        amenu Debug.Evaluate                      :Evaluate<CR>
     endif
 
-    if v:version > 703 || v:version == 703 && has("patch541")
-        set formatoptions+=j " Delete comment character when joining commented lines
+    " -- Misc menu ---------------------------------------------------------------
+    amenu Misc.Cycle\ Spell\ Language     :call ToggleSpell()<CR>
+    amenu Misc.Clear\ Search\ Highlight   :nohlsearch<CR>
+    if executable('xxd')
+        amenu Misc.-Sep-                  <Nop>
+        amenu Misc.Toggle\ Hex\ View      :call <SID>ToggleHex()<CR>
     endif
+
+    " -- Claude menus (only when claude is also available) ----------------------
+    if executable('claude')
+        amenu Claude.Explain\ File        :%ClaudeExplain<CR>
+        amenu Claude.Audit\ File          :%ClaudeAudit<CR>
+        amenu Claude.Review\ File         :%ClaudeReview<CR>
+        amenu Claude.Summarise\ File      :%ClaudeSummarise<CR>
+        amenu Claude.-Sep-                <Nop>
+        vmenu Claude.Explain\ Selection   :ClaudeExplain<CR>
+        vmenu Claude.Audit\ Selection     :ClaudeAudit<CR>
+        vmenu Claude.Review\ Selection    :ClaudeReview<CR>
+        vmenu Claude.Summarise\ Selection :ClaudeSummarise<CR>
+    endif
+endif
+
+"==============================================================================
+" [ 15. AUTOCMDS — MISC ]
+"==============================================================================
+
+" -- Swap file conflict: open readonly -----------------------------------------
+" FIX: Original had echohl None before any echohl WarningMsg — pointless.
+" Corrected version sets the highlight before the echo.
+augroup no_simultaneous_edits
+    autocmd!
+    autocmd SwapExists *  let v:swapchoice = 'o'
+    autocmd SwapExists *  echohl WarningMsg
+    autocmd SwapExists *  echo 'Duplicate edit session — opened read-only'
+    autocmd SwapExists *  echohl None
+    autocmd SwapExists *  sleep 1
+augroup END
+
+" -- Hex / binary view toggle -------------------------------------------------
+" Useful for auditing compiled binaries, firmware, shellcode etc.
+" <leader>hx toggles between text and xxd hex view.
+" WARNING: saving in hex mode writes the xxd dump, not the binary.
+"          Use BinEdit workflow (open with `vim -b`) for real binary editing.
+if executable('xxd')
+    function! s:ToggleHex() abort
+        if !exists('b:hex_mode') || !b:hex_mode
+            let b:hex_mode = 1
+            %!xxd
+        else
+            let b:hex_mode = 0
+            %!xxd -r
+        endif
+    endfunction
+    nnoremap <leader>hx :call <SID>ToggleHex()<CR>
+endif
+
+" -- Return to last cursor position when reopening a file ----------------------
+augroup restore_cursor
+    autocmd!
+    autocmd BufReadPost *
+        \ if line("'\"") > 1 && line("'\"") <= line('$')
+        \|    execute "normal! g'\""
+        \| endif
+augroup END
+
+"==============================================================================
+" [ 16. LOCAL OVERRIDES ]
+"==============================================================================
+" Project-specific overrides live in .vimrc.local in the project root.
+" Example use: override tabstop for a specific codebase, set a custom debugger.
+if filereadable(expand('./.vimrc.local'))
+    source ./.vimrc.local
+endif
